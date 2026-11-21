@@ -158,12 +158,18 @@ def loss_surface(lam=1.0):
     y = 1 + 2 * x + 0.1 * np.sin(7 * x)
     axis = np.linspace(-1, 4, 41)
     z = [[float(np.sum((y - b0 - b1 * x) ** 2) + lam * b1 * b1) for b0 in axis] for b1 in axis]
+    ols_coefficients = fit_ols(a, y)
+    ridge_coefficients = ridge(a, y, lam)
+    def objective(coefficients):
+        return float(np.sum((y - a @ coefficients) ** 2) + lam * coefficients[1] ** 2)
+
     return {
         "x": axis.tolist(),
         "y": axis.tolist(),
         "z": z,
-        "ols": fit_ols(a, y).tolist(),
-        "ridge": ridge(a, y, lam).tolist(),
+        "ols": ols_coefficients.tolist(),
+        "ridge": ridge_coefficients.tolist(),
+        "marker_objective": {"ols": objective(ols_coefficients), "ridge": objective(ridge_coefficients)},
         "objective": "SSE + lambda * slope^2; intercept unpenalized",
         "penalty": lam,
     }

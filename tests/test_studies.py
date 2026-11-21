@@ -20,6 +20,13 @@ def test_surface_objective_and_axes():
     y = 1 + 2*x + 0.1*np.sin(7*x)
     expected = np.sum((y-d["x"][4]-d["y"][9]*x)**2)+2*d["y"][9]**2
     assert np.isclose(d["z"][9][4], expected)
+    for name in ("ols", "ridge"):
+        intercept, slope = d[name]
+        marker_height = np.sum((y - intercept - slope * x) ** 2) + 2 * slope**2
+        assert np.isclose(d["marker_objective"][name], marker_height)
+    zero = loss_surface(0)
+    np.testing.assert_allclose(zero["ols"], zero["ridge"], atol=1e-10)
+    assert np.isclose(zero["marker_objective"]["ols"], zero["marker_objective"]["ridge"])
 
 
 def test_solver_benchmark_shared_cases():

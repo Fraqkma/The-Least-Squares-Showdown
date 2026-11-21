@@ -43,7 +43,7 @@ function drawGraph(model = null, showResiduals = false) {
     const label = step === 3 ? ["minus one sixth", "one third", "minus one sixth"][i] : "minus one";
     return `<line class="walk-residual" x1="${px(point.x)}" x2="${px(point.x)}" y1="${py(predict(model)[i])}" y2="${py(point.y)}" aria-label="${rowName(i)} residual ${label}"/>`;
   }).join("") : "";
-  plot.innerHTML = `<title>Three observed points and the least-squares line</title><desc>${points.map((p, i) => `${rowName(i)} is (${p.x}, ${p.y})`).join("; ")}. Residual is observed y minus predicted y.</desc>${grid}<line class="walk-axis" x1="72" y1="250" x2="390" y2="250"/><line class="walk-axis" x1="72" y1="250" x2="72" y2="18"/>${ticks}<text class="walk-axis-label" x="401" y="255">x</text><text class="walk-axis-label" x="70" y="12">observed y</text>${model ? line(model, step === 3 ? "walk-fit-line" : "walk-start-line") : ""}${segments}${points.map((p, i) => `<g class="walk-point" data-point="${i}"><circle cx="${px(p.x)}" cy="${py(p.y)}" r="7"/><text x="${px(p.x) + 11}" y="${py(p.y) - 10}">${rowName(i)} (${p.x}, ${p.y})</text></g>`).join("")}`;
+  plot.innerHTML = `<title>Three observed points and the least-squares line</title><desc>${points.map((p, i) => `${rowName(i)} is (${p.x}, ${p.y})`).join("; ")}. Residual is observed y minus predicted y.</desc>${grid}<line class="walk-axis" x1="72" y1="250" x2="390" y2="250"/><line class="walk-axis" x1="72" y1="250" x2="72" y2="18"/>${ticks}<text class="walk-axis-label" x="379" y="281">Input x</text><text class="walk-axis-label" x="74" y="12">Observed y</text>${model ? line(model, step === 3 ? "walk-fit-line" : "walk-start-line") : ""}${segments}${points.map((p, i) => `<g class="walk-point" data-point="${i}"><circle cx="${px(p.x)}" cy="${py(p.y)}" r="7"/><text x="${px(p.x) + 11}" y="${py(p.y) - 10}">${rowName(i)} (${p.x}, ${p.y})</text></g>`).join("")}`;
 }
 
 function inputTable() {
@@ -80,12 +80,12 @@ function render() {
     revealMapping(token);
   } else if (step === 2) {
     drawGraph(starting);
-    content.innerHTML = `<h4>3. Predict and measure error</h4><p class="walk-math">&beta; = [b, m]<sup>T</sup>, &nbsp; &#375; = X&beta;</p><p>Start with b = 1 and m = 1, so the line is y = 1 + x.</p><p id="walk-predictions" hidden>Predictions: [${predict(starting).join(", ")}].</p><p id="walk-residual-note" hidden>For P3, residual = observed y &minus; predicted y = 2 &minus; 3 = &minus;1. SSE = (&minus;1)<sup>2</sup> = ${sse(starting)}.</p>`;
+    content.innerHTML = `<h4>3. Predict and measure error</h4><p class="walk-math">&beta; = [b, m]<sup>T</sup>, &nbsp; &#375; = X&beta;</p><p>The intercept b sets the height at x = 0; slope m sets the change per x. Start with &#375; = b + mx = 1 + x.</p><p id="walk-predictions" hidden>Predictions: [${predict(starting).join(", ")}].</p><p id="walk-residual-note" hidden>Residual e<sub>i</sub> = observed y<sub>i</sub> &minus; predicted &#375;<sub>i</sub>. For P3: 2 &minus; 3 = &minus;1. Sum of squared errors (SSE) = &Sigma;(y<sub>i</sub> &minus; &#375;<sub>i</sub>)<sup>2</sup> = 0<sup>2</sup> + 0<sup>2</sup> + (&minus;1)<sup>2</sup> = ${sse(starting)}.</p>`;
     later(() => { content.querySelector("#walk-predictions").hidden = false; }, 350, token);
     later(() => { drawGraph(starting, true); content.querySelector("#walk-residual-note").hidden = false; }, 750, token);
   } else {
     drawGraph(starting);
-    content.innerHTML = `<h4>4. Fit the least-squares line</h4><p class="walk-math">X<sup>T</sup>X&beta; = X<sup>T</sup>y</p><p>3b + 3m = 5<br>3b + 5m = 6</p><p>Solution: <strong>b = 7/6</strong>, <strong>m = 1/2</strong>.</p><p>Fitted predictions: [7/6, 5/3, 13/6].<br>Residuals (observed &minus; predicted): [&minus;1/6, 1/3, &minus;1/6].</p><p class="walk-sse">SSE: ${sse(starting)} &rarr; <strong>1/6</strong></p>`;
+    content.innerHTML = `<h4>4. Fit the least-squares line</h4><p class="walk-math">&#375; = 7/6 + x/2</p><p class="walk-sse">The fit cuts total squared error from ${sse(starting)} to <strong>1/6</strong>.</p><p>Fitted predictions: [7/6, 5/3, 13/6].<br>Residuals (observed &minus; predicted): [&minus;1/6, 1/3, &minus;1/6].</p><p>SSE = (&minus;1/6)<sup>2</sup> + (1/3)<sup>2</sup> + (&minus;1/6)<sup>2</sup> = 1/6.</p><details class="walk-derivation"><summary>Show normal equations</summary><p>X<sup>T</sup>X&beta; = X<sup>T</sup>y</p><p>3b + 3m = 5<br>3b + 5m = 6</p><p>Solution: b = 7/6, m = 1/2.</p></details>`;
     if (reducedMotion.matches) { drawGraph(fitted, true); return; }
     const start = performance.now();
     const animate = (now) => {

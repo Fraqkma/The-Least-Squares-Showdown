@@ -1,11 +1,11 @@
 const colors = {
-  grid: "rgba(31, 38, 35, 0.09)",
-  ink: "#4f5b56",
-  muted: "#64706b",
-  ols: "#287b72",
-  ridge: "#b44f32",
-  train: "#28332f",
-  validation: "#bd792c",
+  grid: "rgba(225, 239, 233, 0.16)",
+  ink: "#eff5f1",
+  muted: "#c2d2ca",
+  ols: "#61c9b2",
+  ridge: "#ef9a73",
+  train: "#d9eee5",
+  validation: "#eec273",
 };
 
 export function renderFitChart(target, data) {
@@ -20,7 +20,7 @@ export function renderFitChart(target, data) {
     { x: data.grid.x, y: data.grid.truth, type: "scatter", mode: "lines", name: "Known signal", line: { color: "#9aa39e", dash: "dot", width: 1.5 }, hovertemplate: "x %{x:.2f}<br>signal %{y:.3f}<extra>Known signal</extra>" },
     { x: data.grid.x, y: data.grid.ols, type: "scatter", mode: "lines", name: "OLS", line: { color: colors.ols, width: 2.5 }, hovertemplate: "x %{x:.2f}<br>fit %{y:.3f}<extra>OLS</extra>" },
     { x: data.grid.x, y: data.grid.ridge, type: "scatter", mode: "lines", name: "Ridge", line: { color: colors.ridge, width: 2.5 }, hovertemplate: "x %{x:.2f}<br>fit %{y:.3f}<extra>Ridge</extra>" },
-    { x: data.train.x, y: data.train.y, type: "scatter", mode: "markers", name: "Train", marker: { color: colors.train, size: 7, line: { color: "#fff", width: 1 } }, customdata: data.train.x.map((_, i) => data.train.y[i] - interpolate(data.grid.x, data.grid.ols, data.train.x[i])), hovertemplate: "train<br>x %{x:.3f}<br>y %{y:.3f}<br>residual %{customdata:.3f}<extra></extra>" },
+    { x: data.train.x, y: data.train.y, type: "scatter", mode: "markers", name: "Train", marker: { color: colors.train, size: 7, line: { color: "#101719", width: 1 } }, customdata: data.train.x.map((_, i) => data.train.y[i] - interpolate(data.grid.x, data.grid.ols, data.train.x[i])), hovertemplate: "train<br>x %{x:.3f}<br>y %{y:.3f}<br>residual %{customdata:.3f}<extra></extra>" },
     { x: data.validation.x, y: data.validation.y, type: "scatter", mode: "markers", name: "Validation", marker: { color: colors.validation, symbol: "diamond-open", size: 9, line: { color: colors.validation, width: 1.5 } }, hovertemplate: "validation<br>x %{x:.3f}<br>y %{y:.3f}<extra></extra>" },
   ];
   const layout = {

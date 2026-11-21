@@ -1,6 +1,6 @@
 # The Least Squares Showdown — Project and Video Storyboard
 
-**Draft for Speaker 1 and Speaker 6 review; no co-authorship or approval is implied.** English-only project copy. No final experiment conclusions are shown.
+**Draft for Nipitpon's final presentation review; no teammate approval is implied.** English-only project copy. Development and approved official Bike Sharing results are labeled separately.
 
 ## Audience and question
 
@@ -24,9 +24,9 @@ Each member speaks for approximately 100 seconds in English. The final script an
 | Screen | What the learner sees | Takeaway |
 |---|---|---|
 | Overview | Hourly bike-rental prediction question, the Battle A case study, and links to the separate synthetic lesson | A close fit to observed points can still generalize poorly. |
-| Least Squares Lab | Featured interactive 3D intercept/slope loss surface, nearby lambda control, projection sketch, and normal-equation explanation | The plotted height matches SSE plus the Ridge slope penalty; QR/SVD explain stable solves. |
-| Overfitting | Train/validation scatter, degree control, error-by-degree and conditioning context | Generalization error and numerical conditioning are related concerns but are not the same thing. |
-| Ridge Regression | Same-feature OLS/Ridge overlay, lambda control, coefficient comparison, and validation curve | Regularization trades fit against coefficient size; it can underfit when too strong and does not always improve held-out error. |
+| Least Squares Lab | Four-step point-to-matrix worked example, OLS/Ridge/Lasso formulas, then the 3D intercept/slope loss surface | SSE falls from 1 to 1/6 in the worked example; the 3D height is SSE plus any Ridge slope penalty. |
+| Overfitting | Fixed degree 1, 3, and 12 OLS plots on one seeded split, each with train and validation MSE; the overview degree slider remains free exploration | A close training fit can have worse validation predictions. |
+| Ridge Regression | A local lambda slider synchronized with the overview, OLS/Ridge fit overlay, validation errors, and signed grouped coefficient bars | At lambda 0 the fits match; a large lambda makes this illustrative fit flatter and raises its validation MSE. |
 | Results | Bike RMSE ranking with MAE, R², and validation-window variation; later, a frozen sealed-test table | Test data evaluates a frozen choice; it does not select one. |
 
 ## Shared visual and interaction rules
@@ -39,7 +39,7 @@ Each member speaks for approximately 100 seconds in English. The final script an
 
 ## Visual direction
 
-Measured, academic, tactile. The visual world is a working mathematics notebook: quiet paper-like neutrals, ink, and plotted evidence. The main fit plot carries the color; a fine residual marker identifies the difference between an observed point and its fitted value.
+Measured, academic, and readable on a dark screen. Plots carry the color; the residual marker identifies the difference between an observed point and its fitted value.
 
 ## Current implementation status
 
@@ -56,8 +56,12 @@ The responsive single-page HTML interface, FastAPI adapter, seeded fit plot, coe
 | Speaker 5, 06:40-08:20 | Show full 3D intercept/slope surface; rotate it and move lambda from 0 to 5. Explain the unpenalized intercept and OLS/Ridge markers. | Compare evidence without changing the primary metric. |
 | Speaker 6, 08:20-10:00 | Show development RMSE 117.460 for OLS/Ridge and 117.474 for Lasso, then the separately labeled official future-date RMSE 144.516, 144.516, and 144.531 rentals/hour. Explain the unchanged settings, exploratory weights, and limitations. | Close with reproducibility and future-date evaluation. |
 
-Demo order: start the local server, wait for bike table, click Run All, inspect per-study progress and failures, rotate surface, adjust penalty, then change bike exploratory weights. Long-run fallback: open saved results/*.json and the report; use the recorded official Bike Sharing result only with its official label; do not rerun scoring during rehearsal. Actual six voices and assignment of teammates remain Nipitpon's recording task.
+Demo order: start the local server, show the four worked-example steps, rotate the 3D surface and adjust its separate penalty, compare the three fixed overfitting plots, then set Ridge lambda to zero and a high value. Open both Battle A views and two Battle B cases. Click Run All if time allows, then change exploratory weights. Long-run fallback: use the saved site results and the report; use the recorded official Bike Sharing result only with its official label. Actual six voices and assignment of teammates remain Nipitpon's recording task.
 
 ## Presentation layout verified after official evaluation
 
-The dark site now keeps the 3D loss surface at the top of the Least Squares Lab, with the penalty control and objective beside it. Saved synthetic and solver studies appear on first load; Run All sits inside the page shell with live status and recomputes them. Battle A has Bike Sharing and Synthetic views; the bike development table and approved official future-date table are separate. Battle B presents all four measured solvers per matrix case and excludes iteration-limited runs from its exploratory order. The bottom of the page ends with Battle B methodology and the footer. At 1365 x 768 and 390 x 844, the page has no horizontal overflow; wide data tables scroll within their own panels. Speaker 1 should start at the 3D lab, Speaker 4 should switch to Synthetic, Speaker 6 should show the recorded official result. No second official scoring run belongs in the live demo.
+The dark site opens the Least Squares Lab with the four-step worked example and keeps the 3D loss surface below its formula cards, with its own penalty control and objective beside it. Saved synthetic and solver studies appear on first load; Run All sits inside the page shell with live status and recomputes them. Battle A has Bike Sharing and Synthetic views; the bike development table and approved official future-date table are separate. Battle B presents all four measured solvers per matrix case and excludes iteration-limited runs from its exploratory order. The bottom of the page ends with Battle B methodology and the footer. At 1365 x 768 and 390 x 844, the page has no horizontal overflow; wide data tables scroll within their own panels. Speaker 1 should start with the worked example, Speaker 4 should switch to Synthetic, Speaker 6 should show the recorded official result. No second official scoring run belongs in the live demo.
+
+## Presentation readability demo clicks
+
+Open Least Squares Lab. Click Next three times to map each point to its matrix row, see the starting residual, and reach the fitted line; use Back and Reset to repeat. Show the three objective cards, then drag the 3D surface and move its separate penalty slider from 0 to 5. Scroll to Overfitting Lab: compare degree 1, 3, and 12 plots and read train/validation MSE below each; move the overview Degree control only for free exploration. In Ridge Regression, check lambda 0, 0.1, and 1,000 with the synchronized section slider. Point to the OLS/Ridge overlay, validation MSE, and signed coefficient bars. Open Battle A Bike Sharing and Synthetic tabs, then change Battle B cases and exploratory weights. Click Run All only if time allows; the saved studies appear on first load. Keep the six speaking slots and the ten-minute plan above.

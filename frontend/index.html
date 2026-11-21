@@ -9,11 +9,12 @@
     <title>The Least Squares Showdown</title>
     <link rel="stylesheet" href="/css/tokens.css?v=present">
     <link rel="stylesheet" href="/css/base.css?v=present">
-    <link rel="stylesheet" href="/css/layout.css?v=present">
-    <link rel="stylesheet" href="/css/components.css?v=present">
+    <link rel="stylesheet" href="/css/layout.css?v=readability2">
+    <link rel="stylesheet" href="/css/components.css?v=readability1">
     <script src="/vendor/plotly.min.js"></script>
-    <script type="module" src="/js/app.js?v=final2"></script>
-    <script type="module" src="/js/walkthrough.js?v=1"></script>
+    <script type="module" src="/js/app.js?v=readability7"></script>
+    <script type="module" src="/js/walkthrough.js?v=readability1"></script>
+    <script type="module" src="/js/overfit.js?v=1"></script>
   </head>
   <body>
     <a class="skip-link" href="#main">Skip to content</a>
@@ -30,7 +31,7 @@
       </nav>
       <div class="rail-note">
         <span class="seed-line" aria-hidden="true"></span>
-        <p>Seeded synthetic data<br><span>Seed 42 · σ = 0.20</span></p>
+        <p>Simulated data<br><span>Random seed 42 · Noise level 0.20</span></p>
       </div>
       <p class="rail-credit">Sections 6.5 and 6.6</p>
     </aside>
@@ -51,7 +52,7 @@
 
     <div class="page-shell">
       <header class="topline">
-        <span>Linear Algebra <span class="topline-divider">/</span> Least Squares and Generalization</span>
+        <span>Linear Algebra <span class="topline-divider">/</span> Least Squares and Predictions</span>
         <span class="connection-state" id="connection-state" aria-live="polite">Connecting to local demo</span>
       </header>
 
@@ -61,10 +62,10 @@
           <div class="hero-copy">
             <p class="eyebrow">An interactive lesson in model fit</p>
             <h1 id="page-title"><span>The Least Squares</span><span>Showdown</span></h1>
-            <p class="hero-lede">Our real-world case studies hourly bike rentals. The interactive synthetic example below shows how least squares, model complexity, and Ridge Regression change a fit.</p>
+            <p class="hero-lede">Use simulated data to see how model settings change the fit, then compare predictions on real bike rentals.</p>
             <div class="hero-actions">
               <a class="button button-primary" href="#overfitting">Explore the fit</a>
-              <a class="text-link" href="#least-squares">Start with the geometry</a>
+              <a class="text-link" href="#least-squares">See how least squares works</a>
             </div>
             <p class="hero-question">Can we predict how many bikes will be rented in a given hour?</p>
           </div>
@@ -73,7 +74,7 @@
             <div class="figure-heading">
               <div>
                 <h2 id="fit-title">One signal, two fits</h2>
-                <p>Same seeded samples · same scaled features</p>
+                <p>Ordinary least squares (OLS) and Ridge use the same training points.</p>
               </div>
               <span class="figure-note">Illustrative example</span>
             </div>
@@ -81,7 +82,7 @@
               <div id="fit-chart" class="fit-chart" role="img" aria-label="Training and validation samples with the true signal and ordinary least squares and Ridge fitted curves"></div>
               <div class="chart-state" id="chart-state" role="status" aria-live="polite">Loading the seeded example</div>
             </div>
-            <figcaption id="fit-caption">Training samples are filled circles; validation samples are open diamonds. The dotted marker shows one training residual. No test samples are shown.</figcaption>
+            <figcaption id="fit-caption">Filled circles are training points. Open diamonds are validation points we use to check predictions. The dotted line marks one residual, the gap from a prediction to the observed value.</figcaption>
             <div class="control-strip" aria-label="Fit controls">
               <label class="range-control" for="degree">
                 <span>Polynomial degree</span>
@@ -111,16 +112,16 @@
             </div>
           </div>
           <section class="walkthrough" aria-labelledby="walkthrough-title">
-            <div class="walkthrough-heading"><div><p class="eyebrow">Worked example: three observations</p><h3 id="walkthrough-title">From Points to Least Squares</h3><p>Follow the same points from a graph to a fitted line. The presenter controls each step.</p></div><span id="walk-step-indicator" class="step-indicator" aria-live="polite">Step 1 of 4</span></div>
+            <div class="walkthrough-heading"><div><p class="eyebrow">Worked example: three observations</p><h3 id="walkthrough-title">From Points to Least Squares</h3><p>Follow three points from the graph to a fitted line. Add up the squared prediction errors to get the sum of squared errors (SSE).</p></div><span id="walk-step-indicator" class="step-indicator" aria-live="polite">Step 1 of 4</span></div>
             <div class="walkthrough-grid"><div class="walk-graph"><svg id="walk-plot" viewBox="0 0 440 300" role="img" aria-label="Worked example graph of observed points"></svg><p class="walk-legend"><span class="legend-observed">Observed points</span><span class="legend-start">Starting line</span><span class="legend-fit">Least-squares line</span></p></div><div id="walk-content" class="walk-content" aria-live="polite"></div></div>
             <div class="walk-controls"><button id="walk-back" class="button" type="button">Back</button><button id="walk-next" class="button button-primary" type="button">Next</button><button id="walk-reset" class="button" type="button">Reset</button></div>
           </section>
-          <section class="model-formulas" aria-labelledby="models-title"><p class="eyebrow">Three objectives, one design matrix</p><h3 id="models-title">OLS, Ridge, and Lasso</h3><p>Here X is the design matrix, y contains observed values, and &beta; contains the intercept and other coefficients.</p><div class="formula-grid">
-            <div class="formula-card"><h4>OLS</h4><p class="formula">min<sub>&beta;</sub> &Vert;y &minus; X&beta;&Vert;<sub>2</sub><sup>2</sup></p><p>Choose coefficients that make the squared prediction errors as small as possible.</p></div>
-            <div class="formula-card"><h4>Ridge</h4><p class="formula">min<sub>&beta;</sub> &Vert;y &minus; X&beta;&Vert;<sub>2</sub><sup>2</sup> + &lambda;&Vert;&beta;<sub>nonintercept</sub>&Vert;<sub>2</sub><sup>2</sup></p><p>Discourage large non-intercept coefficients with a squared penalty.</p></div>
-            <div class="formula-card"><h4>Lasso</h4><p class="formula">min<sub>&beta;</sub> (1 / (2n))&Vert;y &minus; X&beta;&Vert;<sub>2</sub><sup>2</sup> + &alpha;&Vert;&beta;<sub>nonintercept</sub>&Vert;<sub>1</sub></p><p>Discourage large non-intercept coefficients and allow some to become exactly zero.</p></div>
-          </div><p class="formula-note">The intercept is unpenalized in both methods. Ridge &lambda; and Lasso &alpha; use different penalty conventions and are not directly comparable numbers.</p><details class="method-details"><summary>Show derivation</summary><p>For Ridge, set the gradient to zero: (X<sup>T</sup>X + &lambda;P)&beta; = X<sup>T</sup>y, with P = diag(0, 1, &hellip;, 1). The zero leaves the intercept unpenalized.</p><p>For a non-intercept Lasso coordinate j, let r<sub>j</sub> = y &minus; X&beta; + X<sub>j</sub>&beta;<sub>j</sub>, &rho;<sub>j</sub> = X<sub>j</sub><sup>T</sup>r<sub>j</sub>/n, and z<sub>j</sub> = &Vert;X<sub>j</sub>&Vert;<sub>2</sub><sup>2</sup>/n. Then &beta;<sub>j</sub> &larr; S(&rho;<sub>j</sub>, &alpha;)/z<sub>j</sub>, where S(t, &alpha;) = sign(t) max(|t| &minus; &alpha;, 0). Update the intercept without thresholding.</p></details></section>
-          <div class="surface-panel"><div class="surface-copy"><p class="eyebrow">Interactive 3D loss</p><h3>Rotate the loss surface</h3><p>The full two-parameter model has an intercept and a slope. The surface height is SSE + lambda * slope^2; the intercept is free.</p><label for="surface-penalty">Ridge penalty lambda <output id="surface-penalty-value">1</output></label><input id="surface-penalty" type="range" min="0" max="10" step="0.5" value="1"><p id="surface-status" role="status">Loading the objective.</p></div><div id="loss-surface" class="surface-plot" role="img" aria-label="Three-dimensional loss surface with OLS and Ridge minima"></div></div>
+          <section class="model-formulas" aria-labelledby="models-title"><p class="eyebrow">Three ways to fit a model</p><h3 id="models-title">OLS, Ridge, and Lasso</h3><p>X holds the inputs, y holds the observed values, and &beta; holds the numbers the model learns, including the intercept.</p><div class="formula-grid">
+            <div class="formula-card"><h4>Ordinary least squares (OLS)</h4><p class="formula">min<sub>&beta;</sub> &Vert;y &minus; X&beta;&Vert;<sub>2</sub><sup>2</sup></p><p>Choose coefficients that make the squared prediction errors as small as possible.</p></div>
+            <div class="formula-card"><h4>Ridge</h4><p class="formula">min<sub>&beta;</sub> &Vert;y &minus; X&beta;&Vert;<sub>2</sub><sup>2</sup> + &lambda;&Vert;&beta;<sub>nonintercept</sub>&Vert;<sub>2</sub><sup>2</sup></p><p>Square the coefficients to give larger ones a bigger penalty.</p></div>
+            <div class="formula-card"><h4>Lasso</h4><p class="formula">min<sub>&beta;</sub> (1 / (2n))&Vert;y &minus; X&beta;&Vert;<sub>2</sub><sup>2</sup> + &alpha;&Vert;&beta;<sub>nonintercept</sub>&Vert;<sub>1</sub></p><p>Penalize the absolute size of each coefficient. Some can shrink all the way to zero.</p></div>
+          </div><p class="formula-note">Ridge and Lasso leave the intercept out of the penalty. &lambda; sets the penalty strength for Ridge, and &alpha; sets it for Lasso. The formulas put those strengths on different scales.</p><details class="method-details"><summary>Show derivation</summary><p>For Ridge, set the gradient to zero: (X<sup>T</sup>X + &lambda;P)&beta; = X<sup>T</sup>y, with P = diag(0, 1, &hellip;, 1). The zero leaves the intercept unpenalized.</p><p>For a non-intercept Lasso coordinate j, let r<sub>j</sub> = y &minus; X&beta; + X<sub>j</sub>&beta;<sub>j</sub>, &rho;<sub>j</sub> = X<sub>j</sub><sup>T</sup>r<sub>j</sub>/n, and z<sub>j</sub> = &Vert;X<sub>j</sub>&Vert;<sub>2</sub><sup>2</sup>/n. Then &beta;<sub>j</sub> &larr; S(&rho;<sub>j</sub>, &alpha;)/z<sub>j</sub>, where S(t, &alpha;) = sign(t) max(|t| &minus; &alpha;, 0). Update the intercept without thresholding.</p></details></section>
+          <div class="surface-panel"><div class="surface-copy"><p class="eyebrow">Interactive 3D loss</p><h3>Find the lowest loss</h3><p>Each spot represents one possible line. The horizontal axes show its intercept and slope. Height shows how much loss that line gets. Drag to look from another angle.</p><p>Ordinary least squares (OLS) finds the line with the smallest sum of squared errors (SSE). Ridge adds a cost for a large slope and leaves the intercept out of the penalty.</p><label for="surface-penalty">Surface Ridge penalty &lambda; <output id="surface-penalty-value">1</output></label><input id="surface-penalty" type="range" min="0" max="10" step="0.5" value="1"><p id="surface-status" role="status">Loading the objective.</p></div><div id="loss-surface" class="surface-plot" role="img" aria-label="Three-dimensional loss surface: intercept, slope, and objective value"></div></div>
           <div class="lesson-grid geometry-grid">
             <div class="lesson-copy">
               <p>With a design matrix <span class="math-inline">A</span>, least squares chooses coefficients <span class="math-inline">w</span> so that <span class="math-inline">Aw</span> is as close as possible to the observed vector <span class="math-inline">y</span>.</p>
@@ -132,7 +133,7 @@
               <div class="equation-block equation-compact" aria-label="A transpose A w equals A transpose y">
                 <span class="equation">A<sup>T</sup>Aw = A<sup>T</sup>y</span>
               </div>
-              <p class="method-note">For computation, solve with QR or an SVD-based least-squares routine. Forming an explicit inverse is unnecessary and can amplify numerical error.</p>
+              <p class="method-note">QR factorization and singular value decomposition (SVD) are two ways to break the matrix into simpler parts and solve for the coefficients.</p>
             </div>
             <figure class="geometry-figure">
               <svg viewBox="0 0 420 244" role="img" aria-labelledby="geometry-title geometry-desc">
@@ -167,19 +168,21 @@
               <h2 id="overfit-title">More bends do not guarantee better predictions</h2>
             </div>
           </div>
-          <div class="lesson-grid overfit-grid">
-            <div class="lesson-copy">
-              <p>Use the degree control above to change polynomial capacity. Coefficients are fitted on the training split; validation samples stay out of fitting and help compare the resulting curves.</p>
-              <p>A widening training–validation gap can signal overfitting. A rising validation error is a possible outcome, not a guarantee for every sample.</p>
-              <p class="method-note">The condition number below describes sensitivity of the unscaled design matrix. It is a numerical diagnostic, not a measure of generalization.</p>
+          <div class="section-body">
+            <p>Move <strong>Degree</strong> in the overview to change how much the curve can bend. <a href="#degree">Go to the Degree control.</a> The model fits the training points. The validation points show how it predicts data it has not seen.</p>
+            <p>A wiggly curve can fit training points closely and still miss new points. The three charts use exactly the same points. Only the degree changes.</p>
+            <p class="compare-legend"><span class="legend-line">Ordinary least squares (OLS) fit</span><span class="legend-train">Training points</span><span class="legend-validation">Validation points</span></p>
+            <p class="metric-help">Mean squared error (MSE) averages the squared gaps between predictions and actual values. Lower is better. All charts use the same axes. The degree 12 curve goes off the chart near the edges.</p>
+            <div class="overfit-cards">
+              <article class="overfit-card"><h3>Underfit <span>degree 1</span></h3><div id="underfit-plot" class="small-fit-plot" role="img" aria-label="Degree 1 OLS underfit on fixed training and validation points"></div><p>A straight line misses the curved signal.</p><dl><div><dt>Train MSE</dt><dd id="underfit-train">Loading</dd></div><div><dt>Validation MSE</dt><dd id="underfit-validation">Loading</dd></div></dl></article>
+              <article class="overfit-card"><h3>Good fit <span>degree 3</span></h3><div id="goodfit-plot" class="small-fit-plot" role="img" aria-label="Degree 3 OLS fit on fixed training and validation points"></div><p>Follows the main pattern and gets the lowest validation error of the three.</p><dl><div><dt>Train MSE</dt><dd id="goodfit-train">Loading</dd></div><div><dt>Validation MSE</dt><dd id="goodfit-validation">Loading</dd></div></dl></article>
+              <article class="overfit-card"><h3>Overfit <span>degree 12</span></h3><div id="overfit-plot" class="small-fit-plot" role="img" aria-label="Degree 12 OLS overfit on fixed training and validation points"></div><p>Bends to follow the training points. Training error drops while validation error rises.</p><dl><div><dt>Train MSE</dt><dd id="overfit-train">Loading</dd></div><div><dt>Validation MSE</dt><dd id="overfit-validation">Loading</dd></div></dl></article>
             </div>
-            <dl class="diagnostic-list" aria-live="polite">
-              <div><dt>OLS train MSE</dt><dd id="ols-train-mse">—</dd></div>
-              <div><dt>OLS validation MSE</dt><dd id="ols-validation-mse">—</dd></div>
-              <div><dt>Ridge train MSE</dt><dd id="ridge-train-mse">—</dd></div>
-              <div><dt>Ridge validation MSE</dt><dd id="ridge-validation-mse">—</dd></div>
-              <div class="diagnostic-wide"><dt>Unscaled design condition number</dt><dd id="condition-number">—</dd></div>
-            </dl>
+            <p id="overfit-status" role="status">Loading the fixed comparison.</p>
+            <details class="method-details"><summary>Details for the degree you selected</summary>
+              <dl class="diagnostic-list" aria-live="polite"><div><dt>OLS train MSE</dt><dd id="ols-train-mse">—</dd></div><div><dt>OLS validation MSE</dt><dd id="ols-validation-mse">—</dd></div><div><dt>Ridge train MSE</dt><dd id="ridge-train-mse">—</dd></div><div><dt>Ridge validation MSE</dt><dd id="ridge-validation-mse">—</dd></div><div class="diagnostic-wide"><dt>Condition number of the original training matrix</dt><dd id="condition-number">—</dd></div></dl>
+              <p>With a high condition number, small input changes can lead to big changes in the fitted coefficients. Validation MSE measures prediction error on the points left out of fitting.</p>
+            </details>
           </div>
         </section>
 
@@ -188,25 +191,21 @@
             <span class="section-index">03</span>
             <div>
               <p class="eyebrow">Ridge regression lab</p>
-              <h2 id="ridge-title">Constrain the coefficients, not the evidence</h2>
+              <h2 id="ridge-title">See what the Ridge penalty changes</h2>
             </div>
           </div>
+          <div class="ridge-control-panel">
+            <div><p>Ordinary least squares (OLS) and Ridge use the same degree and training points. Move <strong>λ</strong> to change the Ridge penalty. Try a high value and watch the curve and the validation mean squared error (MSE).</p><p id="ridge-current-setting" role="status">Loading the current fit.</p></div>
+            <div><label class="range-control" for="ridge-lambda">Ridge penalty λ <output id="ridge-lambda-value">0.1</output><input id="ridge-lambda" type="range" min="-8" max="3" step="0.1" value="-1"></label><label class="check-control" for="ridge-zero"><input id="ridge-zero" type="checkbox">Set λ to zero</label></div>
+          </div>
+          <div class="ridge-preview"><div id="ridge-fit-chart" class="fit-chart" role="img" aria-label="Current OLS and Ridge fit curves with training and validation points"></div><p id="ridge-validation-summary" role="status">Loading validation errors.</p></div>
           <div class="lesson-grid ridge-grid">
             <div class="lesson-copy">
-              <p>Ridge adds a cost for large non-intercept coefficients. The λ control changes that cost while the OLS and Ridge fits use the same training data and the same training-fitted feature scaling.</p>
-              <div class="equation-block">
-                <span class="equation-label">Unpenalized intercept</span>
-                <span class="equation equation-small">‖y − Aw‖<sub>2</sub><sup>2</sup> + λ ∑<sub>j&gt;0</sub> w<sub>j</sub><sup>2</sup></span>
-              </div>
-              <p>Increasing λ shrinks the polynomial terms and can trade variance for bias. Too much regularization can underfit; Ridge is not guaranteed to improve validation error.</p>
+              <p>Each pair shows the same coefficient for OLS and Ridge. The first pair is the intercept, the fitted value when all the model's features are zero. Ridge leaves it out of the penalty.</p>
+              <div class="equation-block"><span class="equation-label">Unpenalized intercept</span><span class="equation equation-small">‖y − Aw‖<sub>2</sub><sup>2</sup> + λ ∑<sub>j&gt;0</sub> w<sub>j</sub><sup>2</sup></span></div>
+              <p>Ridge makes the coefficients smaller overall. When two features carry similar information, some individual coefficients can move differently. A very high λ can make the fitted curve too flat.</p>
             </div>
-            <figure class="coefficient-figure">
-              <div class="figure-heading">
-                <div><h3>Coefficient comparison</h3><p>Scaled polynomial basis · intercept included</p></div>
-              </div>
-              <div id="coefficient-chart" class="coefficient-chart" role="img" aria-label="Grouped coefficient comparison for ordinary least squares and Ridge"></div>
-              <figcaption>Ridge excludes the intercept from its penalty. Coefficients are shown in the training-standardized basis.</figcaption>
-            </figure>
+            <figure class="coefficient-figure"><div class="figure-heading"><div><h3>Coefficient comparison</h3><p>Coefficients for features scaled using the training data</p></div></div><div id="coefficient-chart" class="coefficient-chart" role="img" aria-label="Grouped signed coefficient comparison for OLS and Ridge on a nonlinear scale"></div><figcaption>The scale compresses large values so small bars stay visible. Hover for an exact value.</figcaption></figure>
           </div>
         </section>
 
@@ -214,37 +213,42 @@
           <div class="section-heading"><span class="section-index">04</span><div><p class="eyebrow">Battle A: regression models</p><h2 id="results-title">Compare models on unseen observations</h2></div></div>
           <div class="view-tabs" role="tablist" aria-label="Battle A data source"><button id="view-bike" type="button" role="tab" aria-selected="true" aria-controls="bike-view">Bike Sharing</button><button id="view-synthetic" type="button" role="tab" aria-selected="false" aria-controls="synthetic-view">Synthetic</button></div>
           <div id="bike-view" role="tabpanel" aria-labelledby="view-bike">
-            <p class="results-intro">Predict <code>cnt</code>, rentals per hour, from hour of day and working-day status. The same 48-column interaction basis and five chronological development windows select OLS, Ridge, and Lasso settings.</p>
-            <div class="table-scroll"><table><caption>Development validation: mean of five future windows, rentals/hour</caption><thead><tr><th scope="col">Model</th><th scope="col">Setting</th><th scope="col">Mean RMSE</th><th scope="col">Mean MAE</th><th scope="col">Mean R^2</th><th scope="col">RMSE SD</th></tr></thead><tbody id="bike-comparison-rows"></tbody></table></div>
+            <p class="results-intro">Predict how many bikes will be rented in each hour. Ordinary least squares (OLS), Ridge, and Lasso use the hour and whether it is a working day. We use root mean squared error (RMSE) on five validation windows to choose the settings.</p>
+            <p id="bike-result-summary" class="result-summary" role="status">Loading the recorded Bike Sharing result.</p>
+            <p class="metric-help">RMSE gives larger mistakes more weight. Mean absolute error (MAE) is the average size of a mistake. Both are in rentals per hour, and lower is better. The coefficient of determination (R²) compares predictions with guessing the average. Higher is better. The standard deviation of RMSE (RMSE SD) shows how much RMSE varies across validation windows.</p>
+            <div class="table-scroll"><table><caption>Development validation: mean of five future windows, rentals/hour</caption><thead><tr><th scope="col">Model</th><th scope="col">Setting</th><th scope="col">Mean RMSE</th><th scope="col">Mean MAE</th><th scope="col">Mean R&sup2;</th><th scope="col">RMSE SD</th></tr></thead><tbody id="bike-comparison-rows"></tbody></table></div>
           <fieldset class="bike-ranking">
-            <legend>Explore tier weights</legend>
-            <p>Adjust how the validation metrics contribute to an exploratory ordering. The primary Battle A ranking above always uses RMSE; Battle B has its own solver ranking.</p>
+            <legend>Choose what matters in the ranking</legend>
+            <p>Give more weight to the scores you care about. These sliders only change the ranking in this panel. The main comparison uses RMSE.</p>
             <div class="bike-weight-grid">
-              <label class="range-control" for="bike-rmse-weight">RMSE tier <output id="bike-rmse-weight-value">3</output><input id="bike-rmse-weight" type="range" min="0" max="5" value="3"></label>
-              <label class="range-control" for="bike-support-weight">MAE and R² tier <output id="bike-support-weight-value">1</output><input id="bike-support-weight" type="range" min="0" max="5" value="1"></label>
-              <label class="range-control" for="bike-variation-weight">Window variation tier <output id="bike-variation-weight-value">1</output><input id="bike-variation-weight" type="range" min="0" max="5" value="1"></label>
+              <label class="range-control" for="bike-rmse-weight">RMSE weight <output id="bike-rmse-weight-value">3</output><input id="bike-rmse-weight" type="range" min="0" max="5" value="3"></label>
+              <label class="range-control" for="bike-support-weight">MAE and R² weight <output id="bike-support-weight-value">1</output><input id="bike-support-weight" type="range" min="0" max="5" value="1"></label>
+              <label class="range-control" for="bike-variation-weight">Weight for consistency across windows <output id="bike-variation-weight-value">1</output><input id="bike-variation-weight" type="range" min="0" max="5" value="1"></label>
             </div>
             <p id="bike-exploratory-rank" aria-live="polite"></p>
           </fieldset>
-            <div class="table-scroll"><table><caption>Official future-date holdout: 2012-08-08 to 2012-12-31, rentals/hour</caption><thead><tr><th scope="col">Model</th><th scope="col">Frozen setting</th><th scope="col">RMSE</th><th scope="col">MAE</th><th scope="col">R^2</th></tr></thead><tbody id="bike-official-rows"><tr><td colspan="5">Loading recorded official result...</td></tr></tbody></table></div>
+            <div class="table-scroll"><table><caption>Official test on later dates (holdout) · Aug 8–Dec 31, 2012 · rentals per hour</caption><thead><tr><th scope="col">Model</th><th scope="col">Frozen setting</th><th scope="col">RMSE</th><th scope="col">MAE</th><th scope="col">R&sup2;</th></tr></thead><tbody id="bike-official-rows"><tr><td colspan="5">Loading recorded official result...</td></tr></tbody></table></div>
             <p id="bike-official-status" role="status">Loading recorded holdout artifact.</p>
-            <details class="method-details"><summary>Bike data and selection method</summary><p>All 13,915 development rows end on 2012-08-07. The last 3,464 rows form one later-date holdout. Mean validation RMSE selects the setting within each model; the official scores are read from the approved one-time scoring artifact. OLS and Ridge tie because Ridge selected lambda = 0. Tier weights affect only the exploratory development order.</p></details>
+            <details class="method-details"><summary>Bike data and selection method</summary><p>The 13,915 development rows end on Aug 7, 2012. The final 3,464 rows were set aside for the official test. We used average validation RMSE to choose the settings, then tested them once on the later dates. Ridge chose λ = 0, which gives the same fit as OLS.</p></details>
           </div>
           <div id="synthetic-view" role="tabpanel" aria-labelledby="view-synthetic" hidden>
-            <p class="results-intro">The ten-seed study compares OLS, Ridge, and Lasso on the same seeded synthetic splits. Degree and penalty are selected on validation MSE; test targets remain reserved.</p>
+            <p class="results-intro">We compare ordinary least squares (OLS), Ridge, and Lasso over 10 runs per noise level. We use validation mean squared error (MSE) to choose the degree and, for Ridge and Lasso, the penalty.</p>
+            <p id="synthetic-result-summary" class="result-summary" role="status">Loading the synthetic result.</p>
+            <p class="metric-help">The standard deviation of the added noise (Noise SD) tells you how strongly the points are scattered. Lower MSE means smaller prediction errors overall.</p>
             <div id="synthetic-summary" role="status">Loading saved ten-seed comparison...</div>
-            <div class="table-scroll"><table><caption>Mean selected validation MSE: 10 seeds per noise level</caption><thead><tr><th scope="col">Noise SD</th><th scope="col">OLS</th><th scope="col">Ridge</th><th scope="col">Lasso</th><th scope="col">Convergence failures</th></tr></thead><tbody id="synthetic-rows"></tbody></table></div>
+            <div class="table-scroll"><table><caption>Average validation MSE for the chosen settings · 10 runs per noise level</caption><thead><tr><th scope="col">Noise SD</th><th scope="col">OLS</th><th scope="col">Ridge</th><th scope="col">Lasso</th><th scope="col">Convergence failures</th></tr></thead><tbody id="synthetic-rows"></tbody></table></div>
             <div id="synthetic-plot" class="study-plot" role="img" aria-label="Validation mean squared error against polynomial degree for seed 42"></div>
             <details class="method-details"><summary>Degree selection and numerical method</summary><p>Degrees 1-15 use train-fitted scaling and the same validation split for all methods. Ridge tests lambda = 0 and twelve log-spaced values from 10^-8 to 10^3. Lasso tests alpha = 0.001, 0.01, 0.1, and 1 with an unpenalized intercept. The corrected 50,000-iteration budget converges all 1,800 Lasso fits; this view shows validation results, not synthetic test scores.</p><div id="synthetic-details"></div></details>
           </div>
         </section>
         <section class="lesson-section section-anchor" id="battle-b" aria-labelledby="battle-b-title">
           <div class="section-heading"><span class="section-index">05</span><div><p class="eyebrow">Battle B: numerical solvers</p><h2 id="battle-b-title">Same problem, four solving methods</h2></div></div>
-          <p class="results-intro">Normal Equations, QR, SVD, and Batch Gradient Descent solve identical inputs within each case. Runtime, coefficient error, and observed array memory are shown together; an iteration-limit result is not a successful solve.</p>
+          <p class="results-intro">Four methods solve the same least-squares problem, including QR factorization (QR) and singular value decomposition (SVD). Choose a matrix to see how fast and how accurately each method solves it.</p>
+          <p id="solver-summary" class="result-summary" role="status">Loading the solver result.</p>
           <div class="view-tabs"><label for="solver-case">Benchmark case</label><select id="solver-case"><option value="100-10">100 x 8, condition 10</option><option value="100-1000000">100 x 8, condition 10^6</option><option value="500-10">500 x 16, condition 10</option><option value="500-1000000">500 x 16, condition 10^6</option></select></div>
-          <div class="table-scroll"><table><caption id="solver-caption">Solver comparison: same matrix and target</caption><thead><tr><th scope="col">Method</th><th scope="col">Status</th><th scope="col">Median runtime</th><th scope="col">Coefficient error</th><th scope="col">Residual norm</th><th scope="col">Input memory</th><th scope="col">Iterations</th></tr></thead><tbody id="solver-rows"><tr><td colspan="7">Loading saved solver measurements...</td></tr></tbody></table></div>
+          <div class="table-scroll"><table><caption id="solver-caption">Solver comparison: same matrix and target</caption><thead><tr><th scope="col">Method</th><th scope="col">Status</th><th scope="col">Median runtime</th><th scope="col">Relative coefficient error</th><th scope="col">Residual norm</th><th scope="col">Input memory</th><th scope="col">Iterations</th></tr></thead><tbody id="solver-rows"><tr><td colspan="7">Loading saved solver measurements...</td></tr></tbody></table></div>
           <fieldset class="bike-ranking"><legend>Explore solver priorities</legend><label for="solver-weight">Runtime weight <output id="solver-weight-value">0.5</output></label><input id="solver-weight" type="range" min="0" max="1" step="0.1" value="0.5"><p id="solver-rank" aria-live="polite">Loading saved solver ordering...</p></fieldset>
-          <details class="method-details"><summary>Benchmark setup and limits</summary><p>Seed 42; shapes 100 x 8 and 500 x 16; condition numbers 10 and 10^6. Each method gets the same matrix and target in a case. Runtime is the median of three wall-clock repetitions. Input memory excludes solver workspace. Gradient descent starts at zero, stops at gradient norm 10^-8, or reaches 10,000 iterations. The exploratory order excludes failed or iteration-limited runs.</p></details>
+          <details class="method-details"><summary>What the benchmark numbers mean</summary><p>Relative coefficient error tells you how far the answer is from the known coefficients. Residual norm combines the prediction gaps into one error measure. A larger condition number means the calculation is more sensitive to small changes. Input memory covers the matrix and target values. An iteration limit means gradient descent used all 10,000 steps before reaching its stopping goal.</p><p>Seed 42; shapes 100 × 8 and 500 × 16; condition numbers 10 and 10^6. Each method receives the same matrix and target within a case. Runtime is the median of three wall-clock repetitions. Gradient descent starts at zero and targets gradient norm 10^-8. Exploratory order excludes incomplete runs.</p></details>
         </section>
 
       </main>
@@ -254,6 +258,6 @@
         <span>Design guidance adapted from Unslop by Damir Sokolovsky · CC BY 4.0</span>
       </footer>
     </div>
-  <script type="module" src="/js/studies.js?v=final3"></script>
+  <script type="module" src="/js/studies.js?v=readability5"></script>
   </body>
 </html>

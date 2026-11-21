@@ -1,14 +1,17 @@
 import { fetchDemo } from "./api.js";
-import { initBikeExploratoryRanking } from "./bike-rank.js?v=final2";
-import { renderCoefficientChart } from "./charts/coefficients.js";
-import { renderFitChart } from "./charts/fits.js";
+import { initBikeExploratoryRanking } from "./bike-rank.js?v=readability1";
+import { renderCoefficientChart } from "./charts/coefficients.js?v=readability3";
+import { renderFitChart } from "./charts/fits.js?v=readability1";
 import { getDemoState } from "./state.js";
 
 const degreeInput = document.querySelector("#degree");
 const lambdaInput = document.querySelector("#lambda");
 const zeroInput = document.querySelector("#no-regularization");
+const ridgeLambdaInput = document.querySelector("#ridge-lambda");
+const ridgeZeroInput = document.querySelector("#ridge-zero");
 const degreeValue = document.querySelector("#degree-value");
 const lambdaValue = document.querySelector("#lambda-value");
+const ridgeLambdaValue = document.querySelector("#ridge-lambda-value");
 const chartState = document.querySelector("#chart-state");
 const chartError = document.querySelector("#plot-error");
 const connectionState = document.querySelector("#connection-state");
@@ -24,9 +27,14 @@ function updateControlLabels() {
   degreeValue.value = degreeInput.value;
   degreeValue.textContent = degreeInput.value;
   lambdaInput.disabled = zeroInput.checked;
+  ridgeLambdaInput.value = lambdaInput.value;
+  ridgeLambdaInput.disabled = zeroInput.checked;
+  ridgeZeroInput.checked = zeroInput.checked;
   const lambda = getDemoState().lambda;
   lambdaValue.value = displayLambda(lambda);
   lambdaValue.textContent = displayLambda(lambda);
+  ridgeLambdaValue.value = displayLambda(lambda);
+  ridgeLambdaValue.textContent = displayLambda(lambda);
 }
 
 function formatMetric(value) {
@@ -35,27 +43,6 @@ function formatMetric(value) {
 
 function setMetric(id, value) {
   document.getElementById(id).textContent = formatMetric(value);
-}
-
-function appendCell(row, text, header = false) {
-  const cell = document.createElement(header ? "th" : "td");
-  if (header) cell.scope = "row";
-  cell.textContent = text;
-  row.append(cell);
-}
-
-function updateComparison(data) {
-  const body = document.querySelector("#comparison-rows");
-  body.replaceChildren();
-  for (const [model, label] of [["ols", "OLS"], ["ridge", "Ridge"]]) {
-    const row = document.createElement("tr");
-    appendCell(row, label, true);
-    appendCell(row, String(data.degree));
-    appendCell(row, model === "ols" ? "0" : displayLambda(data.lambda));
-    appendCell(row, formatMetric(data.metrics[model].train_mse));
-    appendCell(row, formatMetric(data.metrics[model].validation_mse));
-    body.append(row);
-  }
 }
 
 async function refresh() {
@@ -72,8 +59,10 @@ async function refresh() {
     if (sequence !== requestSequence) return;
     await Promise.all([
       renderFitChart(document.querySelector("#fit-chart"), data),
+      renderFitChart(document.querySelector("#ridge-fit-chart"), data),
       renderCoefficientChart(document.querySelector("#coefficient-chart"), data.coefficients),
     ]);
+    if (sequence !== requestSequence) return;
     setMetric("ols-train-mse", data.metrics.ols.train_mse);
     setMetric("ols-validation-mse", data.metrics.ols.validation_mse);
     setMetric("ridge-train-mse", data.metrics.ridge.train_mse);
@@ -81,7 +70,12 @@ async function refresh() {
     document.querySelector("#condition-number").textContent = data.condition_number_unscaled_train_design === null
       ? "Not finite"
       : formatMetric(data.condition_number_unscaled_train_design);
-    updateComparison(data);
+    document.querySelector("#ridge-current-setting").textContent = `Degree ${data.degree} · λ = ${displayLambda(data.lambda)} · same training points and scaled basis`;
+    const ridgeNote = data.lambda === 0 ? "The fits agree at zero penalty."
+      : data.lambda >= 100 && data.metrics.ridge.validation_mse > data.metrics.ols.validation_mse
+        ? "Here the flatter Ridge curve has higher validation error."
+        : "Compare the two curves above.";
+    document.querySelector("#ridge-validation-summary").textContent = `Validation MSE: OLS ${formatMetric(data.metrics.ols.validation_mse)} · Ridge ${formatMetric(data.metrics.ridge.validation_mse)}. Lower is better. ${ridgeNote}`;
     chartState.classList.add("is-hidden");
     connectionState.dataset.state = "ready";
     connectionState.textContent = `Seed ${data.seed} · illustrative`;
@@ -104,6 +98,8 @@ function scheduleRefresh() {
 degreeInput.addEventListener("input", scheduleRefresh);
 lambdaInput.addEventListener("input", scheduleRefresh);
 zeroInput.addEventListener("change", scheduleRefresh);
+ridgeLambdaInput.addEventListener("input", () => { lambdaInput.value = ridgeLambdaInput.value; zeroInput.checked = false; scheduleRefresh(); });
+ridgeZeroInput.addEventListener("change", () => { zeroInput.checked = ridgeZeroInput.checked; scheduleRefresh(); });
 document.querySelector("#retry").addEventListener("click", refresh);
 document.querySelectorAll(".mobile-nav a").forEach((link) => {
   link.addEventListener("click", () => document.querySelector(".mobile-menu").removeAttribute("open"));

@@ -55,7 +55,7 @@ export async function initBikeExploratoryRanking() {
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
     const data = await response.json();
     document.getElementById("bike-comparison-rows").innerHTML = data.results.map((r) =>
-      `<tr data-rmse="${r.mean_rmse}" data-mae="${r.mean_mae}" data-r2="${r.mean_r2}" data-variation="${r.rmse_std}"><th scope="row">${r.method}</th><td>${r.penalty}</td>${[r.mean_rmse,r.mean_mae,r.mean_r2,r.rmse_std].map(v => `<td>${v.toFixed(3)}</td>`).join("")}</tr>`
+      `<tr data-rmse="${r.mean_rmse}" data-mae="${r.mean_mae}" data-r2="${r.mean_r2}" data-variation="${r.rmse_std}"><th scope="row">${r.method}</th><td>${r.penalty}</td><td>${r.mean_rmse.toFixed(3)}</td><td>${r.mean_mae.toFixed(3)}</td><td>${r.mean_r2.toFixed(5)}</td><td>${r.rmse_std.toFixed(3)}</td></tr>`
     ).join("");
   } catch (error) { output.textContent = `Bike development failed: ${error.message}`; return; }
   weightIds.forEach((id) => document.getElementById(id).addEventListener("input", renderExploratoryRank));

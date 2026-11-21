@@ -122,10 +122,10 @@
 .geometry-figure { margin: 0; padding: 12px 4px 0; }
 .geometry-figure svg { display: block; width: 100%; height: auto; overflow: visible; }
 .geometry-figure figcaption { margin: 12px 0 0; }
-.geometry-plane { stroke: #aeb8b2; stroke-width: 2; }
-.geometry-axis { stroke: #d4dad6; stroke-width: 1; }
+.geometry-plane { stroke: var(--ink-soft); stroke-width: 2; }
+.geometry-axis { stroke: var(--ink-muted); stroke-width: 1; }
 .geometry-vector { fill: none; stroke-width: 2.5; }
-.geometry-observed { stroke: #303b38; }
+.geometry-observed { stroke: var(--ink); }
 .geometry-fitted { stroke: var(--plot-ols); }
 .geometry-residual { stroke: var(--accent); stroke-width: 1.5; stroke-dasharray: 4 4; }
 .geometry-right-angle { fill: none; stroke: var(--accent); stroke-width: 1.5; }
@@ -249,3 +249,15 @@ tbody td { color: var(--ink-soft); font-family: var(--mono); font-size: 12px; }
 @media(max-width:820px){.walkthrough,.model-formulas{margin-left:0}}
 @media(max-width:520px){.walkthrough,.model-formulas{padding:16px}.walkthrough-heading{flex-direction:column}.walkthrough h3,.model-formulas h3{font-size:27px}.walk-controls{justify-content:stretch}.walk-controls .button{flex:1}}
 @media(prefers-reduced-motion:reduce){.walkthrough *{scroll-behavior:auto!important;animation:none!important;transition:none!important}}
+
+/* Presentation readability: fixed comparisons, nearby controls, and scannable results. */
+.section-body,.ridge-control-panel,.ridge-preview{margin-left:64px}.section-body>p{max-width:76ch;color:var(--ink-soft);line-height:1.65}.section-body>p strong,.ridge-control-panel strong{color:var(--ink)}
+.compare-legend{display:flex;gap:20px;flex-wrap:wrap;font-size:13px}.compare-legend span::before{content:"";display:inline-block;width:17px;height:4px;vertical-align:middle;margin-right:7px;background:var(--plot-ols)}.compare-legend .legend-train::before{width:10px;height:10px;border-radius:50%;background:var(--plot-train)}.compare-legend .legend-validation::before{width:10px;height:10px;border:2px solid var(--plot-validation);background:transparent;transform:rotate(45deg)}
+.metric-help{max-width:90ch;margin:0 0 16px;color:var(--ink-muted);font-size:13px;line-height:1.6}.overfit-cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin:24px 0 14px}.overfit-card{min-width:0;padding:16px;border:1px solid var(--line);border-radius:var(--radius-panel);background:var(--surface)}.overfit-card h3{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;margin:0;color:var(--ink);font:normal 23px var(--serif)}.overfit-card h3 span{font:12px var(--mono);color:var(--accent)}.small-fit-plot{width:100%;min-width:0;height:265px}.overfit-card p{min-height:42px;color:var(--ink-soft);font-size:13px;line-height:1.5}.overfit-card dl{margin:0}.overfit-card dl div{display:flex;justify-content:space-between;gap:8px;padding:7px 0;border-top:1px solid var(--line)}.overfit-card dt{color:var(--ink-soft);font-size:12px}.overfit-card dd{margin:0;color:var(--ink);font:13px var(--mono);font-variant-numeric:tabular-nums}#overfit-status{color:var(--ink-muted);font-size:13px}
+.ridge-control-panel{display:grid;grid-template-columns:minmax(0,1fr) minmax(220px,.55fr);gap:26px;align-items:center;padding:20px;border:1px solid var(--line);border-radius:var(--radius-panel);background:var(--surface)}.ridge-control-panel p{margin:0 0 8px;color:var(--ink-soft);line-height:1.6}.ridge-control-panel .check-control{margin-top:14px}.ridge-preview{margin-top:18px;margin-bottom:28px;padding:14px 18px;border:1px solid var(--line);border-radius:var(--radius-panel);background:var(--surface)}.ridge-preview p{margin:0 12px 10px;color:var(--ink);font-size:14px}#ridge-current-setting{font:13px var(--mono);color:var(--accent)!important}.ridge-grid{padding-left:0;margin-left:64px}
+.result-summary{margin:0 0 16px 64px;max-width:75ch;padding:12px 16px;border-left:3px solid var(--accent);background:var(--surface-soft);color:var(--ink);font-size:15px;line-height:1.5}#bike-view .result-summary,#synthetic-view .result-summary,#bike-view .metric-help,#synthetic-view .metric-help{margin-left:0}#battle-b>.metric-help{margin-left:64px}.table-scroll{max-width:100%;border:1px solid var(--line);border-radius:10px}.table-scroll table{width:100%}.table-scroll th,.table-scroll td{padding-top:16px;padding-bottom:16px;font-variant-numeric:tabular-nums}tbody th{color:var(--ink)}tbody td{color:var(--ink-soft);font-size:13px}.table-scroll caption{text-align:left;padding:12px 14px;color:var(--ink);font-weight:600;white-space:normal}.method-details p{font-size:14px}.walk-derivation{margin-top:14px;padding:10px 14px;border:1px solid var(--line);border-radius:8px}.walk-derivation summary{cursor:pointer;color:var(--ink)}
+#solver-weight{accent-color:var(--accent)}
+button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visible,a:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+@media(max-width:1150px){.overfit-cards{grid-template-columns:1fr}.overfit-card p{min-height:0}}
+@media(max-width:820px){.section-body,.ridge-control-panel,.ridge-preview,.ridge-grid,#battle-b>.metric-help{margin-left:0}.ridge-control-panel{grid-template-columns:1fr}.result-summary{margin-left:0}}
+@media(max-width:520px){.overfit-card{padding:12px}.result-summary{font-size:14px}.table-scroll{overflow-x:auto}.table-scroll table{min-width:max-content}.ridge-control-panel{padding:16px}}
