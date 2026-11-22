@@ -28,6 +28,8 @@ function renderCase({ key }, data) {
 }
 
 async function loadComparison() {
+  const status = document.getElementById("overfit-status");
+  status.textContent = "Loading the fixed comparison…";
   try {
     const data = await Promise.all(cases.map(({ degree }) => fetchDemo({ degree, lambda: 0 })));
     const reference = data[0];
@@ -38,9 +40,19 @@ async function loadComparison() {
       }
     }
     await Promise.all(cases.map((entry, index) => renderCase(entry, data[index])));
-    document.getElementById("overfit-status").textContent = "Seed 42 · noise SD 0.2 · same 24 training and 24 validation points · OLS in every panel.";
+    status.textContent = "Seed 42 · noise standard deviation (SD) 0.2 · same 24 training and 24 validation points · ordinary least squares (OLS) in every panel.";
   } catch (error) {
-    document.getElementById("overfit-status").textContent = `Fixed comparison unavailable: ${error.message}`;
+    for (const { key } of cases) {
+      document.getElementById(`${key}-train`).textContent = "—";
+      document.getElementById(`${key}-validation`).textContent = "—";
+    }
+    status.textContent = `Fixed comparison unavailable: ${error.message}. `;
+    const retry = document.createElement("button");
+    retry.type = "button";
+    retry.className = "inline-retry";
+    retry.textContent = "Try again";
+    retry.addEventListener("click", loadComparison);
+    status.append(retry);
   }
 }
 

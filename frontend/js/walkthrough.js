@@ -103,5 +103,16 @@ function render() {
 back.addEventListener("click", () => { if (step > 0) { step -= 1; render(); } });
 next.addEventListener("click", () => { if (step < 3) { step += 1; render(); } });
 reset.addEventListener("click", () => { step = 0; render(); });
+document.querySelector(".walk-controls")?.addEventListener("keydown", (event) => {
+  if (event.key === "ArrowLeft" && step > 0) {
+    event.preventDefault();
+    step -= 1;
+    render();
+  } else if (event.key === "ArrowRight" && step < 3) {
+    event.preventDefault();
+    step += 1;
+    render();
+  }
+});
 reducedMotion.addEventListener("change", render);
 render();

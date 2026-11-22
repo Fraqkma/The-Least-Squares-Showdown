@@ -4,7 +4,7 @@ import json
 from pathlib import Path
 from typing import Annotated
 
-from fastapi import FastAPI, Query
+from fastapi import FastAPI, HTTPException, Query
 from fastapi.staticfiles import StaticFiles
 
 from ridge_lab.bike_experiment import bike_development_payload
@@ -48,11 +48,13 @@ def bike_official() -> dict:
 def saved_study(name: str) -> dict:
     """Read a reproducible development snapshot for immediate presentation."""
     if name not in {"synthetic", "solvers"}:
-        raise ValueError("unknown saved study")
+        raise HTTPException(status_code=404, detail="Unknown saved study.")
     path = Path(__file__).resolve().parents[1] / "results" / f"{name}.json"
+    if not path.exists():
+        raise HTTPException(status_code=404, detail="Saved study artifact not found.")
     data = json.loads(path.read_text(encoding="utf-8"))
     if not isinstance(data.get("rows"), list):
-        raise TypeError("saved study has no results")
+        raise HTTPException(status_code=500, detail="Saved study artifact has no results.")
     return data
 
 
@@ -64,9 +66,11 @@ def study(name: str, lam: float = 1.0) -> dict:
         return synthetic_study()
     if name == "solvers":
         return solver_study()
-    if name == "surface" and 0 <= lam <= 1000:
+    if name == "surface":
+        if not 0 <= lam <= 1000:
+            raise HTTPException(status_code=422, detail="Penalty lambda must be between 0 and 1000.")
         return loss_surface(lam)
-    return {"error": "unknown study or invalid penalty"}
+    raise HTTPException(status_code=404, detail="Unknown study.")
 
 
 app.mount("/", StaticFiles(directory=frontend, html=True), name="frontend")

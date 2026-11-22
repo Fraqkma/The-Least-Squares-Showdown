@@ -10,14 +10,25 @@ Battle A uses the bundled UCI Capital Bike Sharing `hour.csv` file to predict `c
 
 Python 3.13 is recommended; Python 3.11 or newer is supported.
 
-```bash
-python -m venv .venv
-# Activate the environment, then:
+Windows PowerShell:
+
+```powershell
+py -3.13 -m venv .venv
+.\.venv\Scripts\Activate.ps1
 python -m pip install -r requirements.txt
 python -m uvicorn api.main:app --reload
 ```
 
-Open `http://127.0.0.1:8000`. Plotly.js is served from the local `frontend/vendor/` directory, so the app does not need a CDN connection.
+macOS / Linux:
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install -r requirements.txt
+python -m uvicorn api.main:app --reload
+```
+
+Open `http://127.0.0.1:8000`. Plotly.js (`frontend/vendor/plotly.min.js`), the UCI Bike Sharing CSV (`data/bike/hour.csv`), and saved development and official artifacts (`results/*.json`) are bundled locally, so the site runs offline with saved results ready on first load.
 
 ## Verify
 
@@ -47,7 +58,7 @@ Plotly.js is distributed under the MIT license; its license is included in `fron
 git diff --check
 ```
 
-Open http://127.0.0.1:8011 and click Run All. The full synthetic sweep can take about two minutes; saved development artifacts are in `results/`. The following official Bike Sharing command was run once after Nipitpon approved the verified snapshot. It must not be rerun for model selection:
+Open `http://127.0.0.1:8011`. Saved development studies and the approved official Bike Sharing table load automatically on first visit; click **Run All comparisons** only when you want to recompute development studies live (the full ten-seed synthetic sweep takes roughly 40–60 seconds). The following official Bike Sharing command was run once after Nipitpon approved the verified snapshot. It must not be rerun for model selection:
 
 ```powershell
 .\.venv\Scripts\python.exe -m ridge_lab.official --approved-by Nipitpon --output results/bike-official.json
