@@ -140,8 +140,8 @@
 
 .ridge-grid { grid-template-columns: minmax(0, 0.85fr) minmax(360px, 1.15fr); }
 .coefficient-figure { min-width: 0; margin: 0; padding: 20px; border: 1px solid var(--line); border-radius: var(--radius-panel); background: var(--surface); }
-.coefficient-chart { min-height: 256px; width: 100%; }
-.coefficient-figure figcaption { margin-top: 4px; }
+.coefficient-chart { min-height: 300px; width: 100%; }
+.coefficient-figure figcaption { margin-top: 12px; }
 
 .results-section { padding-bottom: 72px; }
 .bike-ranking { margin: 24px 0 32px 64px; padding: 18px; border: 1px solid var(--line); }
@@ -232,7 +232,7 @@ tbody td { color: var(--ink-soft); font-family: var(--mono); font-size: 12px; }
 .view-tabs{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:0 0 22px 64px}.view-tabs button,.view-tabs select{padding:10px 16px;border:1px solid var(--line-strong);border-radius:8px;background:var(--surface);color:var(--ink);cursor:pointer}.view-tabs button[aria-selected=true]{background:var(--accent);color:#141a1b}.view-tabs label{color:var(--ink-soft)}
 #bike-view,#synthetic-view,#battle-b>.results-intro,#battle-b>.table-scroll,#battle-b>.method-details{margin-left:64px}
 .method-details{margin:18px 0;padding:15px 18px;border:1px solid var(--line);border-radius:10px;background:var(--surface)}.method-details summary{cursor:pointer;font-weight:600}.method-details p{color:var(--ink-soft);line-height:1.6}
-.study-plot{width:100%;min-height:340px;min-width:0}.table-scroll{max-width:100%;overflow-x:auto}#bike-official-status,#synthetic-summary{color:var(--ink-soft);font-size:13px}
+.study-plot{width:100%;max-width:100%;min-height:340px;min-width:0;overflow:hidden}.table-scroll{max-width:100%;overflow-x:auto}#bike-official-status,#synthetic-summary{color:var(--ink-soft);font-size:13px}
 #battle-b>.bike-ranking{margin-left:64px}.site-footer{border-top:1px solid var(--line)}
 @media(max-width:1100px){.surface-panel{grid-template-columns:1fr}.surface-plot{height:400px}}
 @media(max-width:820px){.surface-panel,.view-tabs,#bike-view,#synthetic-view,#battle-b>.results-intro,#battle-b>.table-scroll,#battle-b>.method-details,#battle-b>.bike-ranking{margin-left:0}.surface-panel{padding:14px}.surface-plot{height:330px}.page-shell{min-width:0}.view-tabs button{flex:1}.bike-weight-grid{grid-template-columns:1fr}}
@@ -242,7 +242,7 @@ tbody td { color: var(--ink-soft); font-family: var(--mono); font-size: 12px; }
 .walkthrough-heading{display:flex;justify-content:space-between;gap:18px;align-items:start}.walkthrough h3,.model-formulas h3{font:normal 31px var(--serif);margin:5px 0 8px}.walkthrough-heading p,.model-formulas>p{color:var(--ink-soft);line-height:1.6;margin:0}.step-indicator{flex:none;border:1px solid var(--line-strong);border-radius:100px;padding:8px 12px;font:12px var(--mono);color:var(--ink)}
 .walkthrough-grid{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(260px,.9fr);gap:24px;margin-top:18px;align-items:start}.walk-graph{min-width:0;padding:12px;border:1px solid var(--line);border-radius:12px;background:var(--page)}#walk-plot{display:block;width:100%;height:auto;max-height:360px}.walk-content{min-width:0}.walk-content h4{font-size:18px;margin:6px 0 12px}.walk-content p{color:var(--ink-soft);line-height:1.6}.walk-math,.walk-sse{font:18px var(--serif);color:var(--ink)!important}.walk-sse strong{color:var(--plot-ols)}
 .walk-gridline{stroke:var(--line);stroke-width:1}.walk-axis{stroke:var(--ink-muted);stroke-width:1.5}.walk-tick,.walk-axis-label{fill:var(--ink-soft);font:12px var(--sans)}.walk-point circle{fill:var(--plot-train);stroke:var(--page);stroke-width:2}.walk-point text{fill:var(--ink);font:12px var(--mono)}.walk-point.is-active circle{fill:var(--accent);stroke:var(--ink);stroke-width:2.5}.walk-point.is-active text{fill:var(--accent)}.walk-start-line{stroke:var(--plot-validation);stroke-width:3}.walk-fit-line{stroke:var(--plot-ols);stroke-width:3}.walk-residual{stroke:var(--error);stroke-width:2.5;stroke-dasharray:5 4}
-.walk-legend{display:flex;flex-wrap:wrap;gap:12px;margin:4px 0 0;color:var(--ink-soft);font-size:11px}.walk-legend span::before{content:"";display:inline-block;width:11px;height:3px;vertical-align:middle;margin-right:5px;background:var(--plot-train)}.walk-legend .legend-start::before{background:var(--plot-validation)}.walk-legend .legend-fit::before{background:var(--plot-ols)}
+.walk-legend{display:flex;flex-wrap:wrap;gap:12px;margin:8px 0 0;color:var(--ink-soft);font-size:12px}.walk-legend span::before{content:"";display:inline-block;width:12px;height:3px;vertical-align:middle;margin-right:6px;background:var(--plot-train)}.walk-legend .legend-start::before{background:var(--plot-validation)}.walk-legend .legend-fit::before{background:var(--plot-ols)}.walk-legend .legend-residual::before{height:0;border-top:2px dashed var(--error);background:transparent}
 .walk-table{width:100%;border-collapse:collapse;font-size:13px}.walk-table caption{text-align:left;color:var(--ink-soft);margin:8px 0}.walk-table th,.walk-table td{padding:9px;border-bottom:1px solid var(--line);text-align:left}.walk-table th{white-space:normal}.walk-map-row.is-active{background:rgba(232,149,107,.16)}.walk-controls{display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap;margin-top:18px}.walk-controls .button{border-color:var(--line-strong);background:var(--surface-soft);color:var(--ink);cursor:pointer}.walk-controls .button-primary{background:var(--accent);color:var(--page);border-color:var(--accent)}.walk-controls .button:disabled{opacity:.45;cursor:not-allowed}
 .model-formulas{margin-top:18px}.formula-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:18px}.formula-card{min-width:0;border:1px solid var(--line);border-radius:10px;padding:16px;background:var(--page)}.formula-card h4{margin:0 0 10px;color:var(--accent)}.formula-card p{color:var(--ink-soft);font-size:13px;line-height:1.5}.formula-card .formula{font:17px var(--serif);color:var(--ink);overflow-wrap:anywhere}.formula-note{margin-top:16px!important}.model-formulas .method-details{margin-bottom:0}
 @media(max-width:1100px){.walkthrough-grid{grid-template-columns:1fr}.formula-grid{grid-template-columns:1fr}}
@@ -255,7 +255,33 @@ tbody td { color: var(--ink-soft); font-family: var(--mono); font-size: 12px; }
 .compare-legend{display:flex;gap:20px;flex-wrap:wrap;font-size:13px}.compare-legend span::before{content:"";display:inline-block;width:17px;height:4px;vertical-align:middle;margin-right:7px;background:var(--plot-ols)}.compare-legend .legend-train::before{width:10px;height:10px;border-radius:50%;background:var(--plot-train)}.compare-legend .legend-validation::before{width:10px;height:10px;border:2px solid var(--plot-validation);background:transparent;transform:rotate(45deg)}
 .metric-help{max-width:90ch;margin:0 0 16px;color:var(--ink-muted);font-size:13px;line-height:1.6}.overfit-cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin:24px 0 14px}.overfit-card{min-width:0;padding:16px;border:1px solid var(--line);border-radius:var(--radius-panel);background:var(--surface)}.overfit-card h3{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;margin:0;color:var(--ink);font:normal 23px var(--serif)}.overfit-card h3 span{font:12px var(--mono);color:var(--accent)}.small-fit-plot{width:100%;min-width:0;height:265px}.overfit-card p{min-height:42px;color:var(--ink-soft);font-size:13px;line-height:1.5}.overfit-card dl{margin:0}.overfit-card dl div{display:flex;justify-content:space-between;gap:8px;padding:7px 0;border-top:1px solid var(--line)}.overfit-card dt{color:var(--ink-soft);font-size:12px}.overfit-card dd{margin:0;color:var(--ink);font:13px var(--mono);font-variant-numeric:tabular-nums}#overfit-status{color:var(--ink-muted);font-size:13px}
 .ridge-control-panel{display:grid;grid-template-columns:minmax(0,1fr) minmax(220px,.55fr);gap:26px;align-items:center;padding:20px;border:1px solid var(--line);border-radius:var(--radius-panel);background:var(--surface)}.ridge-control-panel p{margin:0 0 8px;color:var(--ink-soft);line-height:1.6}.ridge-control-panel .check-control{margin-top:14px}.ridge-preview{margin-top:18px;margin-bottom:28px;padding:14px 18px;border:1px solid var(--line);border-radius:var(--radius-panel);background:var(--surface)}.ridge-preview p{margin:0 12px 10px;color:var(--ink);font-size:14px}#ridge-current-setting{font:13px var(--mono);color:var(--accent)!important}.ridge-grid{padding-left:0;margin-left:64px}
-.result-summary{margin:0 0 16px 64px;max-width:75ch;padding:12px 16px;border-left:3px solid var(--accent);background:var(--surface-soft);color:var(--ink);font-size:15px;line-height:1.5}#bike-view .result-summary,#synthetic-view .result-summary,#bike-view .metric-help,#synthetic-view .metric-help{margin-left:0}#battle-b>.metric-help{margin-left:64px}.table-scroll{max-width:100%;border:1px solid var(--line);border-radius:10px}.table-scroll table{width:100%}.table-scroll th,.table-scroll td{padding-top:16px;padding-bottom:16px;font-variant-numeric:tabular-nums}tbody th{color:var(--ink)}tbody td{color:var(--ink-soft);font-size:13px}.table-scroll caption{text-align:left;padding:12px 14px;color:var(--ink);font-weight:600;white-space:normal}.method-details p{font-size:14px}.walk-derivation{margin-top:14px;padding:10px 14px;border:1px solid var(--line);border-radius:8px}.walk-derivation summary{cursor:pointer;color:var(--ink)}
+.result-summary{margin:0 0 16px 64px;max-width:76ch;padding:12px 16px;border-left:3px solid var(--accent);background:var(--surface-soft);color:var(--ink);font-size:15px;line-height:1.55}
+#bike-view .result-summary,#synthetic-view .result-summary,#bike-view .metric-help,#synthetic-view .metric-help,#bike-view .results-intro,#synthetic-view .results-intro,#bike-view .table-scroll,#synthetic-view .table-scroll,#bike-view .bike-ranking{margin-left:0}
+#battle-b>.metric-help{margin-left:64px}
+.table-scroll{max-width:100%;margin-bottom:20px;border:1px solid var(--line);border-radius:10px;background:var(--surface)}
+.table-scroll table{width:100%}
+.table-scroll th,.table-scroll td{padding:14px 16px;font-variant-numeric:tabular-nums}
+.table-scroll th.num,.table-scroll td.num{text-align:right}
+tbody th{color:var(--ink)}
+tbody td{color:var(--ink-soft);font-size:13px}
+.table-scroll caption{text-align:left;padding:12px 16px;border-bottom:1px solid var(--line);color:var(--ink);font-size:14px;font-weight:600;white-space:normal}
+.method-details p{font-size:14px}
+.walk-derivation{margin-top:14px;padding:12px 16px;border:1px solid var(--line);border-radius:8px;background:var(--page)}
+.walk-derivation summary{cursor:pointer;color:var(--ink);font-weight:500}
+.view-tabs select option{background:var(--surface);color:var(--ink)}
+.preset-row{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:14px}
+.preset-label{color:var(--ink-muted);font-size:12px;margin-right:4px}
+.preset-btn{padding:6px 12px;border:1px solid var(--line-strong);border-radius:var(--radius-control);background:var(--page);color:var(--ink-soft);font-family:var(--mono);font-size:12px;cursor:pointer;transition:background-color var(--fast) var(--ease),color var(--fast) var(--ease),border-color var(--fast) var(--ease)}
+.preset-btn:hover{background:var(--surface-soft);color:var(--ink)}
+.preset-btn[aria-pressed="true"]{border-color:var(--accent);background:rgba(232,149,107,0.16);color:var(--ink)}
+.status-ok{color:var(--plot-ols)}
+.status-limit{color:var(--plot-validation)}
+.status-error{color:var(--error)}
+.inline-retry{margin-left:8px;padding:2px 8px;border:1px solid var(--line-strong);border-radius:6px;background:var(--surface-soft);color:var(--ink);font-size:12px;cursor:pointer}
+.inline-retry:hover{border-color:var(--accent);color:var(--accent-hover)}
+.table-empty{color:var(--ink-muted);font-family:var(--sans);white-space:normal}
+.bike-subhead{margin:28px 0 12px;font-family:var(--serif);font-size:24px;font-weight:400;color:var(--ink)}
+.bike-subhead:first-of-type{margin-top:12px}
 #solver-weight{accent-color:var(--accent)}
 button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visible,a:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
 @media(max-width:1150px){.overfit-cards{grid-template-columns:1fr}.overfit-card p{min-height:0}}

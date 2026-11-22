@@ -1,55 +1,89 @@
-<!doctype html><html lang="en"><meta charset="utf-8"><title>Report</title><style>@page{size:A4;margin:18mm}body{font:11pt/1.45 Georgia,serif;color:#172334;max-width:800px;margin:auto}h1,h2{font-family:Arial,sans-serif}h1{font-size:22pt}h2{font-size:15pt;margin-top:1.4em}table{border-collapse:collapse;width:100%;font:8pt Arial,sans-serif;margin:1em 0}td{padding:5px;border-bottom:1px solid #bbb}tr:first-child{background:#e9eef3;font-weight:bold}tr{break-inside:avoid}p{orphans:3;widows:3}</style><body><h1>The Least Squares Showdown - report draft</h1>
-<p>Can we predict how many bikes will be rented in a given hour?</p>
-<h2>Mathematical foundation</h2>
-<p>For design A, coefficients beta, and observations y, OLS minimizes ||y-A beta||^2. At a minimizer the residual is orthogonal to the columns of A, giving A^T A beta=A^T y. Forming A^T A squares the condition number; QR or SVD avoids explicitly inverting it. Ridge adds lambda times the squared non-intercept coefficients. Lasso uses SSE/(2n) plus alpha times their absolute values. The intercept remains unpenalized; the two penalty scales are not interchangeable.</p>
-<h2>Battle A: real-world development results</h2>
-<p>UCI Bike Sharing, Fanaee-T (2013), DOI 10.24432/C5W894, CC BY 4.0. The fixed 48-column design uses hour, working-day status, and interactions. Rental components reconstruct the target and are excluded. The 13,915 development rows end on 2012-08-07. Five expanding windows estimate future-date behavior within this system. Mean window RMSE is unweighted; these windows are temporally dependent.</p>
-<table>
-<tr><td>Model</td><td>Penalty</td><td>RMSE rentals/hour</td><td>MAE</td><td>R^2</td><td>Window RMSE SD</td></tr>
-<tr><td>OLS</td><td>0.0</td><td>117.460</td><td>83.835</td><td>0.471</td><td>36.719</td></tr>
-<tr><td>Ridge</td><td>0.0</td><td>117.460</td><td>83.835</td><td>0.471</td><td>36.719</td></tr>
-<tr><td>Lasso</td><td>0.001</td><td>117.474</td><td>83.838</td><td>0.471</td><td>36.728</td></tr>
-</table>
-<p>OLS and Ridge tie because selected lambda is zero. This is not evidence that regularization never helps. Window variation is large relative to the differences. The API regenerates the table from actual development output. Refit uses every development row once; reserved targets are masked in the normal loader.</p>
-<h2>Official Battle A Bike Sharing holdout</h2>
-<p>Nipitpon approved the frozen pre-scoring snapshot (61 manifest files, no mismatches) before the one official evaluation. The holdout spans 2012-08-08 through 2012-12-31: 3,464 later-date rows. The selected penalties and 48-column design were fixed from development; all three models were refit on the 13,915 development rows. This table is the one-time official future-date evaluation, distinct from the five-window development table above.</p>
-<table>
-<tr><td>Model</td><td>Development-selected penalty</td><td>Official RMSE (rentals/hour)</td><td>Official MAE (rentals/hour)</td><td>Official R^2</td></tr>
-<tr><td>OLS</td><td>none</td><td>144.516</td><td>101.182</td><td>0.569</td></tr>
-<tr><td>Ridge</td><td>lambda = 0</td><td>144.516</td><td>101.182</td><td>0.569</td></tr>
-<tr><td>Lasso</td><td>alpha = 0.001</td><td>144.531</td><td>101.188</td><td>0.569</td></tr>
-</table>
-<p>OLS and Ridge tie exactly because Ridge lambda is zero and uses the same coefficients. Lasso differs by about 0.015 rentals/hour in RMSE; this single future block does not establish a general winner across cities, years, or conditions. The official results were recorded in `results/bike-official.json`; no model choice was revised from the holdout.</p>
-<h2>Synthetic sensitivity study</h2>
-<p>Seeds 42-51 use independent train/validation/test samples with 24/24/120 observations. Degrees 1-15 and the grids in docs/decisions.md are selected by validation MSE on train-standardized features. The following are means of selected validation scores, not unbiased test errors.</p>
-<table>
-<tr><td>Noise SD</td><td>OLS</td><td>Ridge</td><td>Lasso</td></tr>
-<tr><td>0.1</td><td>0.011672</td><td>0.010059</td><td>0.014724</td></tr>
-<tr><td>0.2</td><td>0.042793</td><td>0.039585</td><td>0.044113</td></tr>
-<tr><td>0.4</td><td>0.165028</td><td>0.157390</td><td>0.165766</td></tr>
-</table>
-<p>The original 10,000-iteration run failed for 365 of 1,800 Lasso configurations (20.28%). A 50,000-iteration bounded run with a numerically equivalent gradient update and an active-set KKT correction reduced failures to zero. The original exclusions changed 21 of 30 Lasso-selected degrees; all selected alpha values remain 0.001. The mean validation ranking remains Ridge, OLS, Lasso at each noise level. The final converged fits required 1 to 30,500 iterations, with maximum KKT residual 9.61e-9. These are selected validation scores, so they are optimistic estimates of future performance. The baseline implementation raised RuntimeError without iteration or KKT details; the final run records both for every Lasso candidate. No solver warning was emitted. No synthetic test score was opened. The reproduction artifact also retains fixed-degree-15 OLS/Ridge selections and all converged candidate scores; the site plots the seed-42 validation curve.</p>
-<h2>Battle B measured benchmark</h2>
-<p>Three repeats per method/case; median perf_counter wall time, no warmup isolation. Seed 42 creates matrices with prescribed singular values and noiseless y=A beta. Input bytes exclude solver workspace and are not peak memory. GD minimizes half-SSE, starts at zero, step 1/||A||^2, tolerance 1e-8, cap 10,000. Timing includes the GD step-size computation. Machine-specific timing is descriptive.</p>
-<table>
-<tr><td>Shape</td><td>Condition</td><td>Solver</td><td>Seconds</td><td>Relative coefficient error</td><td>Status</td></tr>
-<tr><td>100x8</td><td>1e+01</td><td>Normal Equations</td><td>0.000063</td><td>4.807e-15</td><td>completed</td></tr>
-<tr><td>100x8</td><td>1e+01</td><td>QR</td><td>0.000049</td><td>3.545e-16</td><td>completed</td></tr>
-<tr><td>100x8</td><td>1e+01</td><td>SVD</td><td>0.000104</td><td>7.535e-16</td><td>completed</td></tr>
-<tr><td>100x8</td><td>1e+01</td><td>Batch Gradient Descent</td><td>0.008906</td><td>4.629e-07</td><td>completed</td></tr>
-<tr><td>100x8</td><td>1e+06</td><td>Normal Equations</td><td>0.000010</td><td>1.450e-05</td><td>completed</td></tr>
-<tr><td>100x8</td><td>1e+06</td><td>QR</td><td>0.000044</td><td>3.024e-12</td><td>completed</td></tr>
-<tr><td>100x8</td><td>1e+06</td><td>SVD</td><td>0.000029</td><td>1.164e-12</td><td>completed</td></tr>
-<tr><td>100x8</td><td>1e+06</td><td>Batch Gradient Descent</td><td>0.075927</td><td>8.703e-01</td><td>iteration_limit</td></tr>
-<tr><td>500x16</td><td>1e+01</td><td>Normal Equations</td><td>0.000022</td><td>5.730e-15</td><td>completed</td></tr>
-<tr><td>500x16</td><td>1e+01</td><td>QR</td><td>0.000116</td><td>6.488e-16</td><td>completed</td></tr>
-<tr><td>500x16</td><td>1e+01</td><td>SVD</td><td>0.000088</td><td>1.820e-15</td><td>completed</td></tr>
-<tr><td>500x16</td><td>1e+01</td><td>Batch Gradient Descent</td><td>0.009999</td><td>2.622e-07</td><td>completed</td></tr>
-<tr><td>500x16</td><td>1e+06</td><td>Normal Equations</td><td>0.000021</td><td>1.939e-05</td><td>completed</td></tr>
-<tr><td>500x16</td><td>1e+06</td><td>QR</td><td>0.000111</td><td>6.948e-12</td><td>completed</td></tr>
-<tr><td>500x16</td><td>1e+06</td><td>SVD</td><td>0.000094</td><td>8.605e-12</td><td>completed</td></tr>
-<tr><td>500x16</td><td>1e+06</td><td>Batch Gradient Descent</td><td>0.087267</td><td>6.652e-01</td><td>iteration_limit</td></tr>
-</table>
-<p>Two ill-conditioned GD cases reach the iteration limit. A small residual does not guarantee accurate coefficients in an ill-conditioned system. The benchmark is bounded and does not establish universal speed rankings. The separate full 3D intercept/slope demonstration uses SSE + lambda*slope^2 with a free intercept.</p>
-<h2>Reproducibility and limits</h2>
-<p>See README reproduction commands and results/*.json for actual outputs. The approved Bike Sharing settings were frozen for the one official evaluation. Synthetic experiment scope remains separate. Bike exploratory tier weights do not alter selected settings. Six speaking slots are in docs/storyboard.md; member acknowledgments and recorded voices have not been fabricated.</p></body></html>
+<!doctype html><html lang="en"><head><meta charset="utf-8"><title>The Least Squares Showdown — Project Report</title><style>@page{size:A4;margin:14mm 15mm}body{font:10pt/1.44 Georgia,'Times New Roman',serif;color:#172334;max-width:780px;margin:auto}h1,h2{font-family:'Segoe UI',Arial,sans-serif;color:#0f1c2e;break-after:avoid}h1{font-size:19pt;margin:0 0 8px;border-bottom:2px solid #2b4c5e;padding-bottom:5px}h2{font-size:12.5pt;margin:16px 0 6px}h2.page-start{break-before:page;margin-top:0}p,li{margin:0 0 7px;orphans:3;widows:3}ul{margin:4px 0 8px;padding-left:20px}code{font-family:Consolas,'Courier New',monospace;font-size:8.6pt;background:#f1f4f7;padding:1px 4px;border-radius:3px}table{border-collapse:collapse;width:100%;font:8.2pt/1.32 'Segoe UI',Arial,sans-serif;margin:7px 0 10px;font-variant-numeric:tabular-nums}thead{display:table-header-group}th,td{padding:4.5px 6px;border-bottom:1px solid #cbd5e1;text-align:left;vertical-align:top}th{background:#eaf0f5;color:#0f1c2e;font-weight:600;border-bottom:1.5px solid #94a3b8}th.num,td.num{text-align:right;white-space:nowrap}tr{break-inside:avoid}tbody tr:nth-child(even){background:#f8fafc}</style></head><body>
+<h1>The Least Squares Showdown — Project Report</h1>
+<p><strong>Question:</strong> Can we predict how many bikes will be rented in a given hour?</p>
+<h2>1. Mathematical foundation</h2>
+<p>Given a design matrix <code>A</code>, coefficient vector <code>β</code>, and observation vector <code>y</code>, ordinary least squares (OLS) minimizes the sum of squared errors (SSE), <code>‖y − Aβ‖₂²</code>. At a minimizer, the residual <code>y − Aβ</code> is orthogonal to every column of <code>A</code>, producing the normal equations <code>AᵀAβ = Aᵀy</code>. Forming <code>AᵀA</code> explicitly squares the matrix condition number, so numerical implementations prefer QR factorization (QR) or singular value decomposition (SVD) instead of explicit matrix inversion.</p>
+<p>Regularized models add a penalty to control coefficient size while leaving the intercept unpenalized:</p>
+<ul>
+<li><strong>Ridge Regression</strong> minimizes <code>‖y − Aβ‖₂² + λ‖β_nonintercept‖₂²</code>, where <code>λ ≥ 0</code> is on the sum-SSE scale. At <code>λ = 0</code>, Ridge reduces exactly to OLS on the same features.</li>
+<li><strong>Lasso Regression</strong> minimizes <code>(1 / (2n))‖y − Aβ‖₂² + α‖β_nonintercept‖₁</code>, where <code>α &gt; 0</code> sits on the average-half-SSE scale. Because the residual terms differ by a factor of <code>2n</code>, numerical values of <code>λ</code> and <code>α</code> are not directly interchangeable.</li>
+</ul>
+<h2>2. Battle A: Bike Sharing development results</h2>
+<p>Dataset: UCI Capital Bike Sharing <code>hour.csv</code> (Fanaee-T, 2013, DOI 10.24432/C5W894, CC BY 4.0; verified SHA-256 <code>e03de4ee4ef4dc376ac6e04bf829673c6269e8eba5c60fa121640fa2f829504f</code>). The target is <code>cnt</code>, total bike rentals per hour. All three models share the same fixed 48-column design matrix: 1 intercept, 23 hour indicators (<code>hr</code> 1–23 with hour 0 as reference), 1 <code>workingday</code> indicator, and 23 hour-by-working-day interaction columns. Rental component columns (<code>casual</code> and <code>registered</code>) sum identically to <code>cnt</code> and are excluded, along with weather, IDs, and all other raw fields.</p>
+<p>Development uses 13,915 rows spanning 2011-01-01 through 2012-08-07 (585 dates), divided into five chronological expanding windows where all hours of each date stay together and every training date precedes its validation dates. Settings are selected within each method by the unweighted mean of the five validation-window root mean squared error (RMSE) values (in rentals per hour; lower is better), breaking exact ties by smaller penalty. Mean absolute error (MAE, rentals per hour; lower is better), coefficient of determination (R²; higher is better), and population standard deviation (SD) of RMSE across the five windows are reported alongside RMSE (<code>results/bike.json</code>).</p>
+<table><thead><tr>
+<th>Model</th>
+<th>Selected setting</th>
+<th class="num">Mean RMSE (rentals/hr)</th>
+<th class="num">Mean MAE (rentals/hr)</th>
+<th class="num">Mean R²</th>
+<th class="num">Window RMSE SD</th>
+</tr></thead><tbody>
+<tr><td>OLS</td><td>none</td><td class="num">117.460</td><td class="num">83.835</td><td class="num">0.47144</td><td class="num">36.719</td></tr>
+<tr><td>Ridge</td><td>λ = 0</td><td class="num">117.460</td><td class="num">83.835</td><td class="num">0.47144</td><td class="num">36.719</td></tr>
+<tr><td>Lasso</td><td>α = 0.001</td><td class="num">117.474</td><td class="num">83.838</td><td class="num">0.47132</td><td class="num">36.728</td></tr>
+</tbody></table>
+<p>OLS and Ridge tie on development validation because the Ridge grid <code>{0, 1, 10, 100}</code> selects <code>λ = 0</code>. This reflects a well-conditioned, full-rank 48-column basis on thousands of observations rather than evidence that regularization never helps. Window-to-window RMSE variation (<code>36.7</code> rentals/hour) is large relative to the <code>0.014</code> rentals/hour difference between OLS/Ridge and Lasso, and the five chronological windows are temporally dependent. The normal data loader masks reserved holdout targets as <code>NaN</code>; final refit trains each selected setting once on all 13,915 development rows.</p>
+<h2 class="page-start">3. Official Battle A Bike Sharing holdout</h2>
+<p>Before official evaluation, Nipitpon approved the frozen pre-scoring snapshot (all 61 files in <code>results/review-manifest.json</code> matched SHA-256 exactly). The separate later-date official holdout spans 2012-08-08 through 2012-12-31 (146 dates, 3,464 rows). Using the fixed 48-column design and development-selected penalties refit once on all 13,915 development rows, the one-time official scorer produced <code>results/bike-official.json</code>:</p>
+<table><thead><tr>
+<th>Model</th>
+<th>Frozen setting</th>
+<th class="num">Official RMSE (rentals/hr)</th>
+<th class="num">Official MAE (rentals/hr)</th>
+<th class="num">Official R²</th>
+</tr></thead><tbody>
+<tr><td>OLS</td><td>none</td><td class="num">144.516</td><td class="num">101.182</td><td class="num">0.56949</td></tr>
+<tr><td>Ridge</td><td>λ = 0</td><td class="num">144.516</td><td class="num">101.182</td><td class="num">0.56949</td></tr>
+<tr><td>Lasso</td><td>α = 0.001</td><td class="num">144.531</td><td class="num">101.188</td><td class="num">0.56940</td></tr>
+</tbody></table>
+<p>Ridge ties OLS identically on the official holdout because its frozen penalty is <code>λ = 0</code>, producing the exact same refitted coefficients. Lasso differs by <code>0.015</code> rentals/hour in RMSE (<code>144.531</code> vs <code>144.516</code>). Higher holdout RMSE than development mean RMSE reflects seasonal and later-year demand growth in late 2012. This single later-date block from one city does not establish a universal winner across other cities, years, or feature sets. No model choice was changed after viewing official scores.</p>
+<h2>4. Synthetic sensitivity study</h2>
+<p>To study polynomial overfitting and regularization separately from the fixed Bike Sharing basis, the synthetic benchmark draws <code>y = sin(2πx) + ε</code> on <code>[0, 1]</code> across ten random seeds (<code>42–51</code>) and three Gaussian noise standard deviations (<code>0.1</code>, <code>0.2</code>, <code>0.4</code>), using one train/validation split per seed and noise level (<code>24</code> train, <code>24</code> validation, <code>120</code> reserved test observations; 30 validation splits total). Polynomial degrees <code>1–15</code> are standardized using training-set statistics only. Ridge searches <code>λ = 0</code> plus twelve log-spaced values from <code>10⁻⁸</code> to <code>10³</code>; Lasso searches <code>α ∈ {0.001, 0.01, 0.1, 1}</code>. Selection chooses the lowest unrounded validation mean squared error (MSE), breaking ties by lower degree and smaller penalty (<code>results/synthetic.json</code>).</p>
+<table><thead><tr>
+<th class="num">Noise SD</th>
+<th class="num">OLS mean validation MSE</th>
+<th class="num">Ridge mean validation MSE</th>
+<th class="num">Lasso mean validation MSE</th>
+<th class="num">Lasso failures</th>
+</tr></thead><tbody>
+<tr><td class="num">0.1</td><td class="num">0.011672</td><td class="num">0.010059</td><td class="num">0.014724</td><td class="num">0</td></tr>
+<tr><td class="num">0.2</td><td class="num">0.042793</td><td class="num">0.039585</td><td class="num">0.044113</td><td class="num">0</td></tr>
+<tr><td class="num">0.4</td><td class="num">0.165028</td><td class="num">0.157390</td><td class="num">0.165766</td><td class="num">0</td></tr>
+</tbody></table>
+<p>In the initial 10,000-sweep baseline, 365 of 1,800 Lasso fits (<code>20.28%</code>) hit the iteration limit and raised <code>RuntimeError</code>. Upgrading cyclic coordinate descent to maintain incremental residual gradients with an active-set Karush–Kuhn–Tucker (KKT) check and sign-boundary step under a 50,000-sweep budget reduced Lasso convergence failures to <strong>0 of 1,800</strong> (<code>results/lasso-convergence-audit.json</code>). Final Lasso fits converged in <code>1</code> to <code>30,500</code> iterations with maximum KKT residual <code>9.61e-9</code>, matching a stricter <code>1e-10</code> reference on validation predictions. Resolving those 365 failures changed 21 of 30 Lasso-selected degrees while keeping every selected <code>α = 0.001</code> and preserving the aggregate mean validation ordering (Ridge lowest, then OLS, then Lasso at every noise level). Because these are selected validation MSE values, they are optimistic compared with unseen test performance; the synthetic test split remains reserved under the provisional configuration.</p>
+<h2 class="page-start">5. Battle B: numerical solver benchmark</h2>
+<p>Battle B compares four least-squares solvers—Normal Equations, QR, SVD, and Batch Gradient Descent (GD)—on identical synthetic matrices <code>A</code> and noiseless targets <code>y = Aβ</code> (seed <code>42</code>) across shapes <code>100×8</code> and <code>500×16</code> and prescribed condition numbers <code>10</code> and <code>10⁶</code> (<code>results/solvers.json</code>). Runtime is the median of three <code>perf_counter</code> repetitions on one machine without warmup isolation and is descriptive rather than a universal speed ranking. GD minimizes half-SSE starting at zero with step size <code>1 / ‖A‖₂²</code>, gradient-norm tolerance <code>10⁻⁸</code>, and a 10,000-iteration cap (timing includes step-size calculation). Input memory measures the input arrays (<code>A</code> and <code>y</code>) only (<code>7,200</code> bytes for <code>100×8</code>; <code>68,000</code> bytes for <code>500×16</code>); peak solver workspace requires a separate measurement.</p>
+<table><thead><tr>
+<th>Shape</th>
+<th class="num">Cond.</th>
+<th>Solver</th>
+<th class="num">Median (s)</th>
+<th class="num">Rel. coeff. error</th>
+<th class="num">Residual norm</th>
+<th class="num">Input bytes</th>
+<th class="num">Iter.</th>
+<th>Status</th>
+</tr></thead><tbody>
+<tr><td>100×8</td><td class="num">10</td><td>Normal Equations</td><td class="num">0.000014</td><td class="num">4.807e-15</td><td class="num">1.083e-15</td><td class="num">7,200</td><td class="num">Direct</td><td>completed</td></tr>
+<tr><td>100×8</td><td class="num">10</td><td>QR</td><td class="num">0.000039</td><td class="num">3.545e-16</td><td class="num">1.829e-16</td><td class="num">7,200</td><td class="num">Direct</td><td>completed</td></tr>
+<tr><td>100×8</td><td class="num">10</td><td>SVD</td><td class="num">0.000032</td><td class="num">7.535e-16</td><td class="num">7.609e-16</td><td class="num">7,200</td><td class="num">Direct</td><td>completed</td></tr>
+<tr><td>100×8</td><td class="num">10</td><td>Batch Gradient Descent</td><td class="num">0.006624</td><td class="num">4.629e-07</td><td class="num">9.903e-08</td><td class="num">7,200</td><td class="num">1,435</td><td>completed</td></tr>
+<tr><td>100×8</td><td class="num">10⁶</td><td>Normal Equations</td><td class="num">0.000009</td><td class="num">1.450e-05</td><td class="num">3.810e-11</td><td class="num">7,200</td><td class="num">Direct</td><td>completed</td></tr>
+<tr><td>100×8</td><td class="num">10⁶</td><td>QR</td><td class="num">0.000026</td><td class="num">3.024e-12</td><td class="num">1.551e-16</td><td class="num">7,200</td><td class="num">Direct</td><td>completed</td></tr>
+<tr><td>100×8</td><td class="num">10⁶</td><td>SVD</td><td class="num">0.000037</td><td class="num">1.164e-12</td><td class="num">8.342e-16</td><td class="num">7,200</td><td class="num">Direct</td><td>completed</td></tr>
+<tr><td>100×8</td><td class="num">10⁶</td><td>Batch Gradient Descent</td><td class="num">0.050796</td><td class="num">8.703e-01</td><td class="num">2.326e-03</td><td class="num">7,200</td><td class="num">10,000</td><td>iteration_limit</td></tr>
+<tr><td>500×16</td><td class="num">10</td><td>Normal Equations</td><td class="num">0.000021</td><td class="num">5.730e-15</td><td class="num">2.496e-15</td><td class="num">68,000</td><td class="num">Direct</td><td>completed</td></tr>
+<tr><td>500×16</td><td class="num">10</td><td>QR</td><td class="num">0.000115</td><td class="num">6.488e-16</td><td class="num">8.776e-16</td><td class="num">68,000</td><td class="num">Direct</td><td>completed</td></tr>
+<tr><td>500×16</td><td class="num">10</td><td>SVD</td><td class="num">0.000092</td><td class="num">1.820e-15</td><td class="num">2.739e-15</td><td class="num">68,000</td><td class="num">Direct</td><td>completed</td></tr>
+<tr><td>500×16</td><td class="num">10</td><td>Batch Gradient Descent</td><td class="num">0.008683</td><td class="num">2.622e-07</td><td class="num">9.994e-08</td><td class="num">68,000</td><td class="num">1,180</td><td>completed</td></tr>
+<tr><td>500×16</td><td class="num">10⁶</td><td>Normal Equations</td><td class="num">0.000021</td><td class="num">1.939e-05</td><td class="num">7.180e-11</td><td class="num">68,000</td><td class="num">Direct</td><td>completed</td></tr>
+<tr><td>500×16</td><td class="num">10⁶</td><td>QR</td><td class="num">0.000095</td><td class="num">6.948e-12</td><td class="num">3.406e-16</td><td class="num">68,000</td><td class="num">Direct</td><td>completed</td></tr>
+<tr><td>500×16</td><td class="num">10⁶</td><td>SVD</td><td class="num">0.000090</td><td class="num">8.605e-12</td><td class="num">3.382e-15</td><td class="num">68,000</td><td class="num">Direct</td><td>completed</td></tr>
+<tr><td>500×16</td><td class="num">10⁶</td><td>Batch Gradient Descent</td><td class="num">0.074463</td><td class="num">6.652e-01</td><td class="num">6.737e-03</td><td class="num">68,000</td><td class="num">10,000</td><td>iteration_limit</td></tr>
+</tbody></table>
+<p>At condition number <code>10⁶</code>, Normal Equations loses roughly seven digits of coefficient accuracy (<code>1.45e-5</code> and <code>1.94e-5</code>) compared with QR and SVD (<code>1.16e-12</code> to <code>8.60e-12</code>), confirming that squaring the condition number degrades accuracy even when residuals stay small (<code>10⁻¹¹</code>). Batch Gradient Descent reaches the 10,000-iteration limit in both ill-conditioned cases with large coefficient error (<code>0.870</code> and <code>0.665</code>) despite modest residuals (<code>2.3e-3</code> and <code>6.7e-3</code>). The separate interactive 3D loss surface in the site illustrates <code>SSE + λ × slope²</code> with an unpenalized intercept on a two-parameter linear teaching example.</p>
+<h2>6. Reproducibility, governance, and limits</h2>
+<p>All development artifacts (<code>results/bike.json</code>, <code>results/synthetic.json</code>, <code>results/solvers.json</code>, <code>results/lasso-convergence-audit.json</code>) can be reproduced offline via <code>README.md</code> commands without re-running the frozen one-time official Bike Sharing evaluation in <code>results/bike-official.json</code>. Exploratory tier weights in the web interface reorder views only and never alter selected settings or measured tables.</p>
+<p>Remaining limits and human tasks: peak solver workspace memory, multi-machine timing sweeps, and independent external numerical package cross-checks remain out of scope for this benchmark. The six-speaker ten-minute presentation plan lives in <code>docs/storyboard.md</code>; speaker name assignments, voice recording, final submission review, and G0 team acknowledgments remain human team tasks and have not been fabricated.</p>
+</body></html>

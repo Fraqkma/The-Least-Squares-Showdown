@@ -62,3 +62,15 @@ def test_saved_studies_expose_all_comparison_methods() -> None:
         "Normal Equations", "QR", "SVD", "Batch Gradient Descent",
     }
     assert len(synthetic.json()["failures"]) == 0
+
+
+def test_study_routes_reject_unknown_names_and_invalid_penalties() -> None:
+    assert client.get("/api/study/saved/unknown").status_code == 404
+    assert client.get("/api/study/unknown").status_code == 404
+    assert client.get("/api/study/surface", params={"lam": -1}).status_code == 422
+    assert client.get("/api/study/surface", params={"lam": 1001}).status_code == 422
+    zero = client.get("/api/study/surface", params={"lam": 0})
+    pos = client.get("/api/study/surface", params={"lam": 5})
+    assert zero.status_code == pos.status_code == 200
+    assert zero.json()["marker_objective"]["ols"] == zero.json()["marker_objective"]["ridge"]
+    assert pos.json()["marker_objective"]["ridge"] < pos.json()["marker_objective"]["ols"]

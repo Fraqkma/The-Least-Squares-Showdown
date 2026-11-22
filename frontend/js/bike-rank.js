@@ -1,4 +1,5 @@
 const weightIds = ["bike-rmse-weight", "bike-support-weight", "bike-variation-weight"];
+let listenersBound = false;
 
 function scaled(value, values, higherIsBetter = false) {
   const low = Math.min(...values);
@@ -7,19 +8,37 @@ function scaled(value, values, higherIsBetter = false) {
   return higherIsBetter ? (high - value) / (high - low) : (value - low) / (high - low);
 }
 
-function renderExploratoryRank() {
+function formatSetting(row) {
+  if (row.method === "Ridge") return `λ = ${row.penalty}`;
+  if (row.method === "Lasso") return `α = ${row.penalty}`;
+  return "None";
+}
+
+function bindWeightListeners() {
+  if (listenersBound) return;
+  weightIds.forEach((id) => document.getElementById(id).addEventListener("input", renderExploratoryRank));
+  listenersBound = true;
+}
+
+export function renderExploratoryRank() {
   const weights = weightIds.map((id) => Number(document.getElementById(id).value));
   weightIds.forEach((id, index) => {
-    document.getElementById(`${id}-value`).value = String(weights[index]);
-    document.getElementById(`${id}-value`).textContent = String(weights[index]);
+    const out = document.getElementById(`${id}-value`);
+    out.value = String(weights[index]);
+    out.textContent = String(weights[index]);
   });
   const output = document.getElementById("bike-exploratory-rank");
+  const rows = [...document.querySelectorAll("#bike-comparison-rows tr[data-rmse]")];
+  if (!rows.length) {
+    output.textContent = "Development validation results are required before computing an exploratory order.";
+    return;
+  }
   const total = weights.reduce((sum, weight) => sum + weight, 0);
   if (total === 0) {
     output.textContent = "Choose at least one tier weight to explore an ordering.";
     return;
   }
-  const models = [...document.querySelectorAll("#bike-comparison-rows tr")].map((row) => ({
+  const models = rows.map((row) => ({
     name: row.querySelector("th").textContent,
     rmse: Number(row.dataset.rmse),
     mae: Number(row.dataset.mae),
@@ -44,20 +63,54 @@ function renderExploratoryRank() {
     if (last && Math.abs(last.score - model.score) < 1e-12) last.names.push(model.name);
     else groups.push({ score: model.score, names: [model.name] });
   }
-  output.textContent = `Exploratory order: ${groups.map((group) => group.names.join(" = ")).join(" -> ")}. All measured development tiers favor OLS/Ridge, so changing weights does not change this bike order.`;
+  output.textContent = `Exploratory order: ${groups.map((group) => group.names.join(" = ")).join(" → ")}. All measured development metrics favor OLS and Ridge equally, so changing weights keeps this order while leaving table values unchanged.`;
+}
+
+export function renderBikeDevelopment(data) {
+  if (!data || !Array.isArray(data.results) || !data.results.length) {
+    throw new Error("Bike development payload has no results.");
+  }
+  document.getElementById("bike-comparison-rows").innerHTML = data.results.map((r) =>
+    `<tr data-rmse="${r.mean_rmse}" data-mae="${r.mean_mae}" data-r2="${r.mean_r2}" data-variation="${r.rmse_std}">`
+    + `<th scope="row">${r.method}</th>`
+    + `<td>${formatSetting(r)}</td>`
+    + `<td class="num" title="${r.mean_rmse}">${r.mean_rmse.toFixed(3)}</td>`
+    + `<td class="num" title="${r.mean_mae}">${r.mean_mae.toFixed(3)}</td>`
+    + `<td class="num" title="${r.mean_r2}">${r.mean_r2.toFixed(5)}</td>`
+    + `<td class="num" title="${r.rmse_std}">${r.rmse_std.toFixed(3)}</td>`
+    + `</tr>`
+  ).join("");
+  const ols = data.results.find((r) => r.method === "OLS");
+  const ridge = data.results.find((r) => r.method === "Ridge");
+  const lasso = data.results.find((r) => r.method === "Lasso");
+  const summary = document.getElementById("bike-dev-summary");
+  if (summary && ols && ridge && lasso) {
+    summary.textContent = Math.abs(ols.mean_rmse - ridge.mean_rmse) < 1e-9
+      ? `Development validation (five chronological windows): OLS and Ridge tie at λ = ${ridge.penalty} (mean RMSE ${ols.mean_rmse.toFixed(3)} rentals per hour). Lasso is close at ${lasso.mean_rmse.toFixed(3)} (α = ${lasso.penalty}).`
+      : `Development validation mean RMSE: OLS ${ols.mean_rmse.toFixed(3)}, Ridge ${ridge.mean_rmse.toFixed(3)}, Lasso ${lasso.mean_rmse.toFixed(3)} rentals per hour.`;
+  }
+  bindWeightListeners();
+  renderExploratoryRank();
+}
+
+export function renderBikeDevelopmentError(error) {
+  const message = error?.message ?? "Local API unavailable";
+  document.getElementById("bike-comparison-rows").innerHTML =
+    `<tr><td colspan="6" class="table-empty">Could not load development validation results: ${message}. Check that the local API is running, or click Run All comparisons.</td></tr>`;
+  const summary = document.getElementById("bike-dev-summary");
+  if (summary) summary.textContent = `Development validation unavailable: ${message}.`;
+  document.getElementById("bike-exploratory-rank").textContent = "Development validation failed to load, so no exploratory order is available.";
 }
 
 export async function initBikeExploratoryRanking() {
+  bindWeightListeners();
   const output = document.getElementById("bike-exploratory-rank");
-  output.textContent = "Running five development windows...";
+  output.textContent = "Running five chronological development windows…";
   try {
     const response = await fetch("/api/bike/development");
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
-    const data = await response.json();
-    document.getElementById("bike-comparison-rows").innerHTML = data.results.map((r) =>
-      `<tr data-rmse="${r.mean_rmse}" data-mae="${r.mean_mae}" data-r2="${r.mean_r2}" data-variation="${r.rmse_std}"><th scope="row">${r.method}</th><td>${r.penalty}</td><td>${r.mean_rmse.toFixed(3)}</td><td>${r.mean_mae.toFixed(3)}</td><td>${r.mean_r2.toFixed(5)}</td><td>${r.rmse_std.toFixed(3)}</td></tr>`
-    ).join("");
-  } catch (error) { output.textContent = `Bike development failed: ${error.message}`; return; }
-  weightIds.forEach((id) => document.getElementById(id).addEventListener("input", renderExploratoryRank));
-  renderExploratoryRank();
+    renderBikeDevelopment(await response.json());
+  } catch (error) {
+    renderBikeDevelopmentError(error);
+  }
 }

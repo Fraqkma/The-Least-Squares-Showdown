@@ -22,7 +22,7 @@ button { color: inherit; }
   outline-offset: 3px;
 }
 
-::selection { background: #d9e8e2; color: var(--ink); }
+::selection { background: #d9e8e2; color: var(--page); }
 
 .skip-link {
   position: fixed;
@@ -33,7 +33,9 @@ button { color: inherit; }
   transform: translateY(-160%);
   border-radius: var(--radius-control);
   background: var(--ink);
-  color: white;
+  color: var(--page);
+  font-weight: 500;
+  text-decoration: none;
 }
 .skip-link:focus { transform: translateY(0); }
 
