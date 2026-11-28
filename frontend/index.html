@@ -3,11 +3,11 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="An interactive linear algebra lesson on least squares, polynomial overfitting, and Ridge Regression.">
-    <meta name="theme-color" content="#eef5f8">
+    <meta name="description" content="An interactive linear algebra lesson on least squares, polynomial overfitting, and model comparison.">
+    <meta name="theme-color" content="#f4f2f8">
     <link rel="icon" href="/img/favicon.svg" type="image/svg+xml">
     <title>The Least Squares Showdown</title>
-    <link rel="preload" href="/vendor/fonts/unbounded-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="/vendor/fonts/lilita-one-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
     <link rel="preload" href="/vendor/fonts/nunito-sans-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
     <link rel="stylesheet" href="/css/tokens.css">
     <link rel="stylesheet" href="/css/base.css">
@@ -19,6 +19,7 @@
     <script type="module" src="/js/app.js"></script>
     <script type="module" src="/js/walkthrough.js"></script>
     <script type="module" src="/js/overfit.js"></script>
+    <script type="module" src="/js/snow.js"></script>
   </head>
   <body>
     <a class="skip-link" href="#main">Skip to content</a>
@@ -27,11 +28,12 @@
       <header class="masthead">
         <a class="brand" href="#overview">
           <svg class="brand-mark" viewBox="0 0 40 40" aria-hidden="true">
-            <circle cx="20" cy="20" r="19" fill="#042768"/>
-            <circle cx="20" cy="20" r="14.5" fill="#00658d"/>
-            <path d="M5.5 24.5 C9 22 12 22 15 24.5 S21 27 24.5 24.5 S31 22 34.5 24.5 L34 28 C30 34 24 35.5 20 35.5 C14 35.5 8 32 5.8 27 Z" fill="#7fd6d5"/>
-            <path d="M11 22 L29 13.5" stroke="#b5503b" stroke-width="2.6" stroke-linecap="round"/>
-            <g fill="#fdf8f3"><circle cx="13" cy="19" r="2.3"/><circle cx="20" cy="18.6" r="2.3"/><circle cx="27" cy="13.4" r="2.3"/></g>
+            <rect width="40" height="40" rx="10" fill="#37547C"/>
+            <path d="M4 33 L16 14 L23 23 L29 12 L37 33 Z" fill="#67769F"/>
+            <path d="M16 14 L12.5 19.5 L15.8 18.2 L18.5 20.5 Z" fill="#F4F2F8"/>
+            <path d="M29 12 L26.2 17.2 L29 16 L31.6 17.6 Z" fill="#FFFFFF"/>
+            <path d="M8 29 L32 16" stroke="#B5503B" stroke-width="2.6" stroke-linecap="round"/>
+            <g fill="#FFFFFF"><circle cx="12" cy="26.8" r="2.2"/><circle cx="20" cy="22.5" r="2.2"/><circle cx="28" cy="18.2" r="2.2"/></g>
           </svg>
           <span class="brand-text"><span class="brand-name">The Least Squares Showdown</span><span class="brand-course">Linear algebra lab on least squares and predictions</span></span>
         </a>
@@ -49,17 +51,16 @@
           <li><a href="#overview" aria-current="page"><span class="chapter-num" aria-hidden="true">1</span><span class="chapter-name">Overview</span></a></li>
           <li><a href="#least-squares"><span class="chapter-num" aria-hidden="true">2</span><span class="chapter-name">Least Squares Lab</span></a></li>
           <li><a href="#overfitting"><span class="chapter-num" aria-hidden="true">3</span><span class="chapter-name">Overfitting Lab</span></a></li>
-          <li><a href="#ridge"><span class="chapter-num" aria-hidden="true">4</span><span class="chapter-name">Ridge Regression</span></a></li>
-          <li><a href="#results"><span class="chapter-num" aria-hidden="true">5</span><span class="chapter-name">Battle A <small>Models</small></span></a></li>
-          <li><a href="#battle-b"><span class="chapter-num" aria-hidden="true">6</span><span class="chapter-name">Battle B <small>Solvers</small></span></a></li>
+          <li><a href="#results"><span class="chapter-num" aria-hidden="true">4</span><span class="chapter-name">Battle A <small>Models</small></span></a></li>
+          <li><a href="#battle-b"><span class="chapter-num" aria-hidden="true">5</span><span class="chapter-name">Battle B <small>Solvers</small></span></a></li>
         </ol>
       </nav>
 
       <main id="main" tabindex="-1">
-        <!-- Chapter 1 -->
+        <!-- Chapter 1: Base Camp -->
         <section class="chapter section-anchor" id="overview" aria-labelledby="page-title" data-chart="fit-chart">
           <div class="hero">
-            <img class="hero-art" src="/img/hero-harbor.svg" alt="">
+            <img class="hero-art" src="/img/snow/hero-mountain.webp" alt="">
             <div class="hero-copy">
               <p class="hero-kicker">A linear algebra group project</p>
               <h1 id="page-title"><span>The Least Squares</span> <span>Showdown</span></h1>
@@ -69,6 +70,13 @@
                 <a class="button button-light" href="#least-squares">See how least squares works</a>
               </div>
             </div>
+            <ol class="trail-camps" aria-label="Mountain trail camps">
+              <li class="camp-stop camp-1"><a href="#overview" aria-current="page"><span class="camp-pin" aria-hidden="true"></span><span class="camp-meta"><strong>Base Camp</strong><span class="camp-sub">1,000 m · Overview</span></span></a></li>
+              <li class="camp-stop camp-2"><a href="#least-squares"><span class="camp-pin" aria-hidden="true"></span><span class="camp-meta"><strong>Camp I</strong><span class="camp-sub">2,000 m · Least Squares Lab</span></span></a></li>
+              <li class="camp-stop camp-3"><a href="#overfitting"><span class="camp-pin" aria-hidden="true"></span><span class="camp-meta"><strong>Camp II</strong><span class="camp-sub">3,000 m · Overfitting Lab</span></span></a></li>
+              <li class="camp-stop camp-4"><a href="#results"><span class="camp-pin" aria-hidden="true"></span><span class="camp-meta"><strong>Camp III</strong><span class="camp-sub">4,000 m · Battle A (Models)</span></span></a></li>
+              <li class="camp-stop camp-5"><a href="#battle-b"><span class="camp-pin" aria-hidden="true"></span><span class="camp-meta"><strong>Summit</strong><span class="camp-sub">5,000 m · Battle B (Solvers)</span></span></a></li>
+            </ol>
           </div>
 
           <div class="split overview-fit">
@@ -111,15 +119,15 @@
             </figure>
           </div>
 
-          <div class="sea-divider" aria-hidden="true"></div>
+          <div class="snow-divider" aria-hidden="true"></div>
           <div class="overview-notes">
             <section class="note-card" aria-labelledby="data-notes-title">
-              <h3 data-icon="bubbles" id="data-notes-title">Where do the dots and curves come from?</h3>
+              <h3 data-icon="snow" id="data-notes-title">Where do the dots and curves come from?</h3>
               <p>The dotted grey curve is the known signal, f(x) = sin(2πx). Each observed y adds a random offset to that curve. The offsets have a normal distribution with mean 0 and standard deviation 0.20. Seed 42 reproduces the same training and validation samples.</p>
               <p>Degree sets the highest power of x in the fitted polynomial. Both models learn their coefficients from the training points. OLS minimizes training SSE. Ridge adds a penalty on the non-intercept coefficients. Validation MSE averages squared prediction errors on the checking points.</p>
             </section>
             <section class="figure-card point-inspector" aria-labelledby="inspector-title">
-              <h3 data-icon="buoy" id="inspector-title">Follow one point</h3>
+              <h3 data-icon="marker" id="inspector-title">Follow one point</h3>
               <div class="point-picker">
                 <label>Data set <select id="point-set"><option value="train">Train · fitting</option><option value="validation">Validation · checking</option></select></label>
                 <label>Example point <select id="point-index"></select></label>
@@ -145,20 +153,20 @@
               <input id="no-regularization" type="checkbox">
               <span>Set λ to zero</span>
             </label>
-            <p class="control-hint">Changes refit the overview, overfitting explorer, and Ridge charts together.</p>
+            <p class="control-hint">Changes refit the overview and overfitting explorer charts together.</p>
           </div>
         </section>
 
-        <!-- Chapter 2 -->
+        <!-- Chapter 2: Camp I -->
         <section class="chapter section-anchor" id="least-squares" aria-labelledby="least-title" data-chart="walk-plot">
           <header class="chapter-head">
+            <img class="chapter-banner-art" src="/img/snow/banner-camp-1.webp" alt="">
             <div class="chapter-head-text">
-              <p class="chapter-count">Chapter 2 of 6</p>
+              <p class="camp-tag"><span class="camp-name">Camp I</span> <span class="camp-alt">2,000 m</span></p>
+              <p class="chapter-count">Chapter 2 of 5</p>
               <h2 id="least-title">Least Squares Lab: find the minimum</h2>
               <p class="chapter-lede">Turn three points into a matrix equation, measure the squared error, then look for the bottom of the loss surface.</p>
             </div>
-            <span class="chapter-watermark" aria-hidden="true">02</span>
-            <img class="porthole" src="/img/porthole-least-squares.svg" alt="">
           </header>
 
           <section class="figure-card walkthrough" aria-labelledby="walkthrough-title">
@@ -185,10 +193,10 @@
             <div class="walk-controls" role="group" aria-label="Worked example steps"><button id="walk-back" class="button button-secondary" type="button">Back</button><button id="walk-reset" class="button button-quiet" type="button">Reset</button><button id="walk-next" class="button button-primary" type="button">Next</button></div>
           </section>
 
-          <div class="sea-divider" aria-hidden="true"></div>
+          <div class="snow-divider" aria-hidden="true"></div>
           <section class="objectives" aria-labelledby="models-title">
             <div class="block-head">
-              <h3 data-icon="shell" id="models-title">Three ways to fit a model: OLS, Ridge, and Lasso</h3>
+              <h3 data-icon="peak" id="models-title">Three ways to fit a model: OLS, Ridge, and Lasso</h3>
               <p>X holds the inputs, y holds the observed values, and &beta; holds the numbers the model learns, including the intercept.</p>
             </div>
             <div class="formula-grid">
@@ -200,11 +208,11 @@
             <details class="method-details"><summary>Show derivation</summary><p>For Ridge, set the gradient to zero: (X<sup>T</sup>X + &lambda;P)&beta; = X<sup>T</sup>y, with P = diag(0, 1, &hellip;, 1). The zero leaves the intercept unpenalized.</p><p>For a non-intercept Lasso coordinate j, let r<sub>j</sub> = y &minus; X&beta; + X<sub>j</sub>&beta;<sub>j</sub>, &rho;<sub>j</sub> = X<sub>j</sub><sup>T</sup>r<sub>j</sub>/n, and z<sub>j</sub> = &Vert;X<sub>j</sub>&Vert;<sub>2</sub><sup>2</sup>/n. Then &beta;<sub>j</sub> &larr; S(&rho;<sub>j</sub>, &alpha;)/z<sub>j</sub>, where S(t, &alpha;) = sign(t) max(|t| &minus; &alpha;, 0). Update the intercept without thresholding.</p></details>
           </section>
 
-          <div class="sea-divider" aria-hidden="true"></div>
+          <div class="snow-divider" aria-hidden="true"></div>
           <section class="split surface-split" aria-labelledby="surface-title">
             <div class="split-text surface-copy">
               <p class="block-kicker">Interactive 3D loss for a two-parameter teaching model</p>
-              <h3 data-icon="lighthouse" id="surface-title">Find the lowest loss</h3>
+              <h3 data-icon="elevation" id="surface-title">Find the lowest loss</h3>
               <p>Each spot on the surface is one candidate line. Its height is that line’s loss, so the best line sits at the bottom.</p>
               <dl class="axis-key">
                 <div><dt>Intercept</dt><dd>first horizontal axis</dd></div>
@@ -217,11 +225,11 @@
             </div>
             <figure class="figure-card surface-figure">
               <div id="loss-surface" class="surface-plot" role="img" aria-label="Three-dimensional loss surface: intercept, slope, and objective value"></div>
-              <figcaption>Drag to look from another angle. This λ belongs to the surface only; the Ridge chapter has its own.</figcaption>
+              <figcaption>Drag to look from another angle. This λ belongs to the surface only; the overview fit has its own.</figcaption>
             </figure>
           </section>
 
-          <div class="sea-divider" aria-hidden="true"></div>
+          <div class="snow-divider" aria-hidden="true"></div>
           <section class="split geometry-split" aria-labelledby="geometry-heading">
             <div class="split-text lesson-copy">
               <h3 data-icon="compass" id="geometry-heading">Least squares as a projection</h3>
@@ -242,13 +250,13 @@
                 <title id="geometry-title">Least-squares projection</title>
                 <desc id="geometry-desc">The fitted vector A w lies in the column space of A. The residual from A w to y is perpendicular to that subspace.</desc>
                 <defs>
-                  <marker id="arrow-ink" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#042768"></path></marker>
-                  <marker id="arrow-teal" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#00658d"></path></marker>
-                  <marker id="arrow-rust" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#7b2d24"></path></marker>
+                  <marker id="arrow-ink" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#37547C"></path></marker>
+                  <marker id="arrow-ols" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#3A6AAF"></path></marker>
+                  <marker id="arrow-rust" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#B5503B"></path></marker>
                 </defs>
                 <path class="geometry-plane" d="M48 190 L362 190"></path>
                 <path class="geometry-axis" d="M72 212 L72 28"></path>
-                <path class="geometry-vector geometry-fitted" d="M72 190 L298 190" marker-end="url(#arrow-teal)"></path>
+                <path class="geometry-vector geometry-fitted" d="M72 190 L298 190" marker-end="url(#arrow-ols)"></path>
                 <path class="geometry-vector geometry-observed" d="M72 190 L298 65" marker-end="url(#arrow-ink)"></path>
                 <path class="geometry-residual" d="M298 184 L298 72" marker-end="url(#arrow-rust)"></path>
                 <path class="geometry-right-angle" d="M298 178 L310 178 L310 190"></path>
@@ -262,16 +270,16 @@
           </section>
         </section>
 
-        <!-- Chapter 3 -->
+        <!-- Chapter 3: Camp II -->
         <section class="chapter section-anchor" id="overfitting" aria-labelledby="overfit-title" data-chart="explore-chart">
           <header class="chapter-head">
+            <img class="chapter-banner-art" src="/img/snow/banner-camp-2.webp" alt="">
             <div class="chapter-head-text">
-              <p class="chapter-count">Chapter 3 of 6</p>
+              <p class="camp-tag"><span class="camp-name">Camp II</span> <span class="camp-alt">3,000 m</span></p>
+              <p class="chapter-count">Chapter 3 of 5</p>
               <h2 id="overfit-title">More bends do not guarantee better predictions</h2>
               <p class="chapter-lede">Move Degree to change how much the curve can bend. Fit on the training points, then check how well the curve predicts the validation points.</p>
             </div>
-            <span class="chapter-watermark" aria-hidden="true">03</span>
-            <img class="porthole" src="/img/porthole-overfitting.svg" alt="">
           </header>
 
           <div class="overfit-intro">
@@ -287,10 +295,10 @@
           </div>
           <p id="overfit-status" class="status-line" role="status" aria-live="polite">Loading the fixed comparison.</p>
 
-          <div class="sea-divider" aria-hidden="true"></div>
+          <div class="snow-divider" aria-hidden="true"></div>
           <section class="split overfit-trend" aria-labelledby="trend-title">
             <div class="split-text">
-              <h3 data-icon="wave" id="trend-title">What changes as the model becomes more flexible</h3>
+              <h3 data-icon="elevation" id="trend-title">What changes as the model becomes more flexible</h3>
               <p id="overfit-trend-text" aria-live="polite">Loading the measured errors.</p>
               <p>Training error usually keeps falling as the polynomial gains terms, because a bigger polynomial can always copy a smaller one. Validation error is the honest check: it can rise again once the curve starts fitting noise.</p>
             </div>
@@ -300,10 +308,10 @@
             </figure>
           </section>
 
-          <div class="sea-divider" aria-hidden="true"></div>
+          <div class="snow-divider" aria-hidden="true"></div>
           <section class="split overfit-explore" aria-labelledby="explore-title">
             <div class="split-text">
-              <h3 data-icon="sailboat" id="explore-title">Try any degree</h3>
+              <h3 data-icon="pine" id="explore-title">Try any degree</h3>
               <p>The three cards stay fixed. To explore, open <strong>Controls</strong> and move <strong>Degree</strong>: this chart refits OLS on the same points.</p>
               <button class="button button-secondary" type="button" data-open-panel="degree">Change the degree</button>
               <dl class="diagnostic-list" aria-live="polite"><div><dt>OLS train MSE</dt><dd id="ols-train-mse">—</dd></div><div><dt>OLS validation MSE</dt><dd id="ols-validation-mse">—</dd></div><div><dt>Ridge train MSE</dt><dd id="ridge-train-mse">—</dd></div><div><dt>Ridge validation MSE</dt><dd id="ridge-validation-mse">—</dd></div><div class="diagnostic-wide"><dt>Condition number of the unscaled training design matrix</dt><dd id="condition-number">—</dd></div></dl>
@@ -316,79 +324,22 @@
           </section>
         </section>
 
-        <!-- Chapter 4 -->
-        <section class="chapter section-anchor" id="ridge" aria-labelledby="ridge-title" data-chart="ridge-fit-chart">
-          <header class="chapter-head">
-            <div class="chapter-head-text">
-              <p class="chapter-count">Chapter 4 of 6</p>
-              <h2 id="ridge-title">See what the Ridge penalty changes</h2>
-              <p class="chapter-lede">Ridge works like an anchor line: the larger λ is, the harder it pulls the coefficients toward zero.</p>
-            </div>
-            <span class="chapter-watermark" aria-hidden="true">04</span>
-            <img class="porthole" src="/img/porthole-ridge.svg" alt="">
-          </header>
-
-          <div class="figure-card ridge-deck">
-            <div class="ridge-deck-copy">
-              <p>Ordinary least squares (OLS) and Ridge use the same polynomial degree and training points. Move <strong>λ</strong> to change how strongly Ridge pulls the coefficients toward zero. Then try a high λ and check the curve and the validation error.</p>
-              <p id="ridge-current-setting" class="ridge-setting" role="status" aria-live="polite">Loading the current fit.</p>
-            </div>
-            <div class="ridge-deck-controls">
-              <label class="range-control range-large" for="ridge-lambda"><span>Ridge penalty λ</span> <output id="ridge-lambda-value" for="ridge-lambda">0.1</output><input id="ridge-lambda" type="range" min="-8" max="3" step="0.1" value="-1"></label>
-              <div class="preset-row" role="group" aria-label="Quick Ridge penalty presets">
-                <button class="preset-btn" type="button" data-ridge-preset="0" aria-pressed="false">λ = 0 (matches OLS)</button>
-                <button class="preset-btn" type="button" data-ridge-preset="0.1" aria-pressed="true">λ = 0.1</button>
-                <button class="preset-btn" type="button" data-ridge-preset="1000" aria-pressed="false">λ = 1,000 (strong)</button>
-                <label class="check-control" for="ridge-zero"><input id="ridge-zero" type="checkbox">Set λ to zero</label>
-              </div>
-            </div>
-            <p id="ridge-validation-summary" class="result-summary ridge-summary" role="status" aria-live="polite">Loading validation errors.</p>
-          </div>
-
-          <div class="ridge-visuals">
-            <figure class="figure-card">
-              <div class="figure-heading"><div><h3>Fitted curves</h3><p>OLS and Ridge on the same training points</p></div></div>
-              <div id="ridge-fit-chart" class="fit-chart ridge-fit-chart" role="img" aria-label="Current OLS and Ridge fit curves with training and validation points"></div>
-              <p class="plot-error" id="ridge-error" role="alert" hidden>Could not update the Ridge preview. Check that the local API is running, then <button id="ridge-retry" type="button">try again</button>.</p>
-            </figure>
-            <figure class="figure-card coefficient-figure">
-              <div class="figure-heading"><div><h3>Coefficient comparison</h3><p>Signed coefficients in the training-standardized polynomial basis</p></div></div>
-              <div id="coefficient-chart" class="coefficient-chart" role="img" aria-label="Grouped signed coefficient comparison for OLS and Ridge on a nonlinear scale"></div>
-              <figcaption>Bars use a signed nonlinear scale so small Ridge weights remain visible beside large OLS weights. Hover any bar for its exact value.</figcaption>
-            </figure>
-          </div>
-
-          <div class="sea-divider" aria-hidden="true"></div>
-          <div class="ridge-notes">
-            <section class="note-card">
-              <h3 data-icon="anchor">The intercept stays free</h3>
-              <p>Each pair shows the same coefficient for OLS and Ridge. The first pair is the intercept, the fitted value when all scaled features are zero. Ridge leaves it out of the penalty.</p>
-              <div class="equation-block"><span class="equation-label">Ridge objective with an unpenalized intercept</span><span class="equation equation-small">‖y − Aw‖<sub>2</sub><sup>2</sup> + λ ∑<sub>j&gt;0</sub> w<sub>j</sub><sup>2</sup></span></div>
-            </section>
-            <section class="note-card">
-              <h3 data-icon="shell">Shrinkage is overall</h3>
-              <p>Ridge pulls the non-intercept coefficients smaller overall. Because polynomial features are correlated, some individual coefficients can shift differently.</p>
-            </section>
-            <section class="note-card">
-              <h3 data-icon="buoy">Too much penalty underfits</h3>
-              <p>A very high λ flattens the curve and raises validation error. Try λ = 1,000 and compare the validation MSE above.</p>
-            </section>
-          </div>
-        </section>
-
-        <!-- Chapter 5 -->
+        <!-- Chapter 4: Camp III (Battle A) -->
         <section class="chapter section-anchor results-section" id="results" aria-labelledby="results-title" data-chart="bike-window-plot">
           <header class="chapter-head">
+            <img class="chapter-banner-art" src="/img/snow/banner-camp-3.webp" alt="">
             <div class="chapter-head-text">
-              <p class="chapter-count">Chapter 5 of 6</p>
+              <p class="camp-tag"><span class="camp-name">Camp III</span> <span class="camp-alt">4,000 m</span></p>
+              <p class="chapter-count">Chapter 4 of 5</p>
               <h2 id="results-title">Battle A: compare models on unseen observations</h2>
               <p class="chapter-lede">OLS, Ridge, and Lasso race on the same data. Validation picks each model’s setting before any test score is read.</p>
             </div>
-            <span class="chapter-watermark" aria-hidden="true">05</span>
-            <img class="porthole" src="/img/porthole-battle-a.svg" alt="">
           </header>
 
-          <div class="view-tabs" role="tablist" aria-label="Battle A data source"><button id="view-bike" type="button" role="tab" aria-selected="true" aria-controls="bike-view">Bike Sharing</button><button id="view-synthetic" type="button" role="tab" aria-selected="false" aria-controls="synthetic-view">Synthetic</button></div>
+          <div class="battle-a-bar">
+            <div class="view-tabs" role="tablist" aria-label="Battle A data source"><button id="view-bike" type="button" role="tab" aria-selected="true" aria-controls="bike-view">Bike Sharing</button><button id="view-synthetic" type="button" role="tab" aria-selected="false" aria-controls="synthetic-view">Synthetic</button></div>
+            <aside id="battle-a-race" class="race-strip" aria-label="Battle A summit race"></aside>
+          </div>
 
           <div id="bike-view" class="battle-view" role="tabpanel" aria-labelledby="view-bike">
             <div class="split">
@@ -404,7 +355,7 @@
               </figure>
             </div>
 
-            <div class="sea-divider" aria-hidden="true"></div>
+            <div class="snow-divider" aria-hidden="true"></div>
             <h3 data-icon="map" class="table-heading">Development validation (five chronological windows)</h3>
             <div class="table-scroll"><table><caption>Development validation: mean of five expanding future windows · rentals per hour</caption><thead><tr><th scope="col">Model</th><th scope="col">Selected setting</th><th scope="col" class="num">Mean RMSE</th><th scope="col" class="num">Mean MAE</th><th scope="col" class="num">Mean R&sup2;</th><th scope="col" class="num">RMSE SD</th></tr></thead><tbody id="bike-comparison-rows"><tr><td colspan="6" class="table-empty">Loading five-window development results...</td></tr></tbody></table></div>
 
@@ -419,7 +370,7 @@
               <p id="bike-exploratory-rank" class="rank-line" aria-live="polite"></p>
             </fieldset>
 
-            <div class="sea-divider" aria-hidden="true"></div>
+            <div class="snow-divider" aria-hidden="true"></div>
             <section class="official-block" aria-labelledby="official-title">
               <div class="official-head">
                 <h3 data-icon="flag" id="official-title" class="table-heading">Official later-date test (holdout)</h3>
@@ -446,23 +397,23 @@
                 <figcaption>Seed 42 · noise SD 0.2 · best validation MSE at each degree, on a logarithmic scale.</figcaption>
               </figure>
             </div>
-            <div class="sea-divider" aria-hidden="true"></div>
-            <h3 data-icon="bubbles" class="table-heading">Ten seeds at three noise levels</h3>
+            <div class="snow-divider" aria-hidden="true"></div>
+            <h3 data-icon="snow" class="table-heading">Ten seeds at three noise levels</h3>
             <div class="table-scroll"><table><caption>Mean selected validation MSE · 10 seeds per noise level (validation splits only)</caption><thead><tr><th scope="col">Noise SD</th><th scope="col" class="num">OLS</th><th scope="col" class="num">Ridge</th><th scope="col" class="num">Lasso</th><th scope="col" class="num">Convergence failures</th></tr></thead><tbody id="synthetic-rows"><tr><td colspan="5" class="table-empty">Loading saved synthetic results...</td></tr></tbody></table></div>
             <details class="method-details"><summary>Degree selection and numerical method</summary><p>Degrees 1–15 use train-fitted scaling and the same 24-train / 24-validation split per seed and noise level for all methods. Ridge tests λ = 0 plus twelve log-spaced values from 10<sup>−8</sup> to 10<sup>3</sup>. Lasso tests α = 0.001, 0.01, 0.1, and 1 with an unpenalized intercept. The corrected 50,000-iteration budget converges all 1,800 Lasso fits; this view reports validation scores only, not held-out synthetic test scores.</p><p id="synthetic-details"></p></details>
           </div>
         </section>
 
-        <!-- Chapter 6 -->
+        <!-- Chapter 5: Summit (Battle B) -->
         <section class="chapter section-anchor" id="battle-b" aria-labelledby="battle-b-title" data-chart="solver-plot">
           <header class="chapter-head">
+            <img class="chapter-banner-art" src="/img/snow/banner-summit.webp" alt="">
             <div class="chapter-head-text">
-              <p class="chapter-count">Chapter 6 of 6</p>
+              <p class="camp-tag"><span class="camp-name">Summit</span> <span class="camp-alt">5,000 m</span></p>
+              <p class="chapter-count">Chapter 5 of 5</p>
               <h2 id="battle-b-title">Battle B: same problem, four solving methods</h2>
               <p class="chapter-lede">Every method receives the same matrix A and target y. Only the route to the answer changes.</p>
             </div>
-            <span class="chapter-watermark" aria-hidden="true">06</span>
-            <img class="porthole" src="/img/porthole-battle-b.svg" alt="">
           </header>
 
           <section class="figure-card routes" aria-labelledby="routes-title">
@@ -479,7 +430,7 @@
             </ol>
           </section>
 
-          <div class="sea-divider" aria-hidden="true"></div>
+          <div class="snow-divider" aria-hidden="true"></div>
           <div class="split">
             <div class="split-text battle-narrative">
               <p class="results-intro">Four methods solve the same least-squares problem: Normal Equations, QR factorization (QR), singular value decomposition (SVD), and Batch Gradient Descent. Pick a matrix case to compare speed and numerical accuracy on identical inputs.</p>
@@ -494,18 +445,21 @@
             </figure>
           </div>
 
-          <div class="sea-divider" aria-hidden="true"></div>
+          <div class="snow-divider" aria-hidden="true"></div>
           <h3 data-icon="map" class="table-heading">Measured results</h3>
           <div class="table-scroll"><table><caption id="solver-caption">Solver comparison: same matrix and target</caption><thead><tr><th scope="col">Method</th><th scope="col">Status</th><th scope="col" class="num">Median runtime</th><th scope="col" class="num">Relative coefficient error</th><th scope="col" class="num">Residual norm</th><th scope="col" class="num">Input memory (arrays only)</th><th scope="col" class="num">Iterations</th></tr></thead><tbody id="solver-rows"><tr><td colspan="7" class="table-empty">Loading saved solver measurements...</td></tr></tbody></table></div>
-          <fieldset class="bike-ranking solver-ranking"><legend>Explore solver priorities</legend><p>Move the weight from 0 (prioritize coefficient accuracy) to 1 (prioritize shorter runtime). Only the exploratory order below changes; measured table values stay fixed.</p><label class="range-control" for="solver-weight"><span>Runtime weight</span> <output id="solver-weight-value">0.5</output><input id="solver-weight" type="range" min="0" max="1" step="0.1" value="0.5"></label><p id="solver-rank" class="rank-line" aria-live="polite">Loading saved solver ordering...</p></fieldset>
+          <div class="ranking-split">
+            <fieldset class="bike-ranking solver-ranking"><legend>Explore solver priorities</legend><p>Move the weight from 0 (prioritize coefficient accuracy) to 1 (prioritize shorter runtime). Only the exploratory order below changes; measured table values stay fixed.</p><label class="range-control" for="solver-weight"><span>Runtime weight</span> <output id="solver-weight-value">0.5</output><input id="solver-weight" type="range" min="0" max="1" step="0.1" value="0.5"></label><p id="solver-rank" class="rank-line" aria-live="polite">Loading saved solver ordering...</p></fieldset>
+            <aside id="battle-b-race" class="race-strip" aria-label="Battle B summit race"></aside>
+          </div>
           <details class="method-details"><summary>Benchmark setup and limits</summary><p>Seed 42; matrix shapes 100 × 8 and 500 × 16; prescribed condition numbers 10 and 10<sup>6</sup> with noiseless y = Aβ. Every solver receives the exact same matrix and target within each case. Median runtime comes from three wall-clock repetitions on one machine and is descriptive rather than a universal speed rank. Batch Gradient Descent starts at zero, uses step 1 / ‖A‖<sub>2</sub><sup>2</sup>, targets gradient norm 10<sup>−8</sup>, and stops at 10,000 steps. Peak solver workspace memory is not measured here. Exploratory ordering excludes incomplete runs.</p></details>
         </section>
       </main>
 
       <nav class="chapter-pager" aria-label="Move through the presentation">
         <div class="pager-progress">
-          <div class="voyage" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></div>
-          <span id="chapter-position">Chapter 1 of 6</span>
+          <div class="camp-trail" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
+          <span id="chapter-position">Chapter 1 of 5</span>
         </div>
         <div class="pager-buttons"><a id="previous-chapter" class="button button-secondary" hidden>Previous</a><a id="next-chapter" class="button button-primary" href="#least-squares">Next: Least Squares Lab</a></div>
       </nav>
@@ -515,7 +469,7 @@
     <footer class="site-footer">
       <div class="footer-text">
         <span>Course connection: Linear Algebra, Sections 6.5 and 6.6</span>
-        <span>Design guidance adapted from Unslop by Damir Sokolovsky · CC BY 4.0 · Fonts: Unbounded and Nunito Sans (SIL OFL)</span>
+        <span>Design guidance adapted from Unslop by Damir Sokolovsky · CC BY 4.0 · Fonts: Lilita One and Nunito Sans (SIL OFL)</span>
       </div>
     </footer>
 

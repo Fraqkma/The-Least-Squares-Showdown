@@ -17,9 +17,8 @@ const chapterName = (index) => links[index]?.querySelector(".chapter-name")?.fir
 
 const notes = {
   overview: "Refit both curves on the same 24 training points. The degree and λ stay in place when you close this panel or change chapters.",
-  "least-squares": "Change the slope penalty on the two-parameter loss surface. It is separate from the Ridge chapter’s λ.",
+  "least-squares": "Change the slope penalty on the two-parameter loss surface. It is separate from the overview fit’s λ.",
   overfitting: "Move Degree to refit the explorer chart. The three comparison cards keep degrees 1, 3 and 12.",
-  ridge: "These are the shared degree and Ridge penalty. The intercept always stays out of the penalty.",
   "results-bike": "Switch data sets, or weight the development metrics to explore an ordering. Measured values never change.",
   "results-synthetic": "The synthetic study compares fixed noise levels across ten seeds. Run All recomputes it live.",
   "battle-b": "Choose a benchmark case and weight runtime against coefficient accuracy.",
@@ -43,7 +42,7 @@ function fillPanel() {
   const index = chapters.indexOf(active);
   document.querySelector("#panel-chapter").textContent = `Chapter ${index + 1}: ${chapterName(index)}`;
   let key = active.id;
-  if (["overview", "overfitting", "ridge"].includes(key)) moveToPanel(fitControls);
+  if (["overview", "overfitting"].includes(key)) moveToPanel(fitControls);
   if (key === "least-squares") moveToPanel(surfaceControls);
   if (key === "results") {
     const bike = !document.querySelector("#bike-view").hidden;
@@ -120,7 +119,7 @@ function showChapter(moveFocus = false) {
     else link.removeAttribute("aria-current");
   });
   document.querySelector("#chapter-position").textContent = `Chapter ${index + 1} of ${chapters.length}`;
-  document.querySelectorAll(".voyage i").forEach((dot, position) => {
+  document.querySelectorAll(".camp-trail i").forEach((dot, position) => {
     dot.dataset.state = position < index ? "past" : position === index ? "current" : "next";
   });
   document.title = index === 0 ? "The Least Squares Showdown" : `${chapterName(index)} · The Least Squares Showdown`;
@@ -171,7 +170,7 @@ const sizes = new ResizeObserver((entries) => {
     if (contentRect.width && target.data) window.Plotly.Plots.resize(target).catch(() => {});
   }
 });
-document.querySelectorAll(".fit-chart, .small-fit-plot, .study-plot, .surface-plot, .coefficient-chart, .battle-plot, .mse-chart, .explore-chart")
+document.querySelectorAll(".fit-chart, .small-fit-plot, .study-plot, .surface-plot, .battle-plot, .mse-chart, .explore-chart")
   .forEach((plot) => sizes.observe(plot));
 window.addEventListener("hashchange", () => showChapter(true));
 showChapter();

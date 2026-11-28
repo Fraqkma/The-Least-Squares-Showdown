@@ -10,7 +10,7 @@ export function renderFitChart(target, data, selection) {
   const residualY = data[set].y[index];
   const residualFit = data.predictions[set].ridge[index];
   const traces = [
-    { x: data.grid.x, y: data.grid.truth, type: "scatter", mode: "lines", name: "Known signal", line: { color: colors.signal, dash: "dot", width: 2 }, hovertemplate: "x %{x:.2f}<br>signal %{y:.3f}<extra>Known signal</extra>" },
+    { x: data.grid.x, y: data.grid.truth, type: "scatter", mode: "lines", name: "Known signal", line: { color: colors.signal, dash: "dash", width: 2 }, hovertemplate: "x %{x:.2f}<br>signal %{y:.3f}<extra>Known signal</extra>" },
     { x: data.grid.x, y: data.grid.ols, type: "scatter", mode: "lines", name: "OLS", line: { color: colors.ols, width: 3 }, hovertemplate: "x %{x:.2f}<br>fit %{y:.3f}<extra>OLS</extra>" },
     { x: data.grid.x, y: data.grid.ridge, type: "scatter", mode: "lines", name: "Ridge", line: { color: colors.ridge, width: 3, dash: "dash" }, hovertemplate: "x %{x:.2f}<br>fit %{y:.3f}<extra>Ridge</extra>" },
     { x: data.train.x, y: data.train.y, type: "scatter", mode: "markers", name: "Train", marker: { color: colors.train, size: 8, line: { color: colors.surface, width: 1.5 } }, customdata: data.train.y.map((y, i) => y - data.predictions.train.ridge[i]), hovertemplate: "train<br>x %{x:.3f}<br>y %{y:.3f}<br>Ridge residual %{customdata:.3f}<extra></extra>" },

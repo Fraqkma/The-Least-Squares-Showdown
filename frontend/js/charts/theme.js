@@ -1,21 +1,21 @@
 // Chart colours. Keep these in step with the "Chart series" block in css/tokens.css.
-// OLS, Ridge, Lasso and gradient descent pass the all-pairs colour-vision checks on white.
+// OLS, Ridge, Lasso and gradient descent pass colour-blind separation checks on white.
 export const colors = {
-  ols: "#00658d",
+  ols: "#3a6aaf",
   ridge: "#b5503b",
-  lasso: "#05a0a2",
-  gd: "#d9a01e",
-  train: "#042768",
+  lasso: "#18978a",
+  gd: "#d49a1e",
+  train: "#26355e",
   validation: "#c29a2e",
-  signal: "#8c8f86",
-  rust: "#7b2d24",
-  ink: "#042768",
-  inkSoft: "#33466e",
-  muted: "#5b6782",
-  grid: "#e6edf2",
-  axis: "#a9bfcc",
+  signal: "#9192b0",
+  rust: "#b5503b",
+  ink: "#37547c",
+  inkSoft: "#41597a",
+  muted: "#526385",
+  grid: "#e8e6f0",
+  axis: "#9192b0",
   surface: "#ffffff",
-  surfaceRamp: [[0, "#f3fafb"], [0.3, "#bfe6e8"], [0.65, "#3aa1b6"], [1, "#0b4f86"]],
+  surfaceRamp: [[0, "#f4f2f8"], [0.3, "#ccbac9"], [0.65, "#67769f"], [1, "#37547c"]],
 };
 
 export const fontFamily = '"Nunito Sans", "Segoe UI", system-ui, sans-serif';

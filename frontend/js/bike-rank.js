@@ -1,7 +1,9 @@
 import { renderBikeWindows } from "./charts/battles.js";
+import { renderRaceStrip } from "./race-strip.js";
 
 const weightIds = ["bike-rmse-weight", "bike-support-weight", "bike-variation-weight"];
 let listenersBound = false;
+let lastBikeRace = [];
 
 function scaled(value, values, higherIsBetter = false) {
   const low = Math.min(...values);
@@ -22,6 +24,10 @@ function bindWeightListeners() {
   listenersBound = true;
 }
 
+export function getBikeRaceEntries() {
+  return lastBikeRace;
+}
+
 export function renderExploratoryRank() {
   const weights = weightIds.map((id) => Number(document.getElementById(id).value));
   weightIds.forEach((id, index) => {
@@ -33,6 +39,10 @@ export function renderExploratoryRank() {
   const rows = [...document.querySelectorAll("#bike-comparison-rows tr[data-rmse]")];
   if (!rows.length) {
     output.textContent = "Development validation results are required before computing an exploratory order.";
+    lastBikeRace = [];
+    if (!document.getElementById("bike-view")?.hidden) {
+      renderRaceStrip("battle-a-race", [], "Bike Sharing · development order");
+    }
     return;
   }
   const total = weights.reduce((sum, weight) => sum + weight, 0);
@@ -66,6 +76,20 @@ export function renderExploratoryRank() {
     else groups.push({ score: model.score, names: [model.name] });
   }
   output.textContent = `Exploratory order: ${groups.map((group) => group.names.join(" = ")).join(" → ")}. All measured development metrics favor OLS and Ridge equally, so changing weights keeps this order while leaving table values unchanged.`;
+
+  const entries = [];
+  let place = 1;
+  for (const group of groups) {
+    const tied = group.names.length > 1;
+    for (const name of group.names) {
+      entries.push({ name, rank: place, tied });
+    }
+    place += group.names.length;
+  }
+  lastBikeRace = entries;
+  if (!document.getElementById("bike-view")?.hidden) {
+    renderRaceStrip("battle-a-race", entries, "Bike Sharing · development order");
+  }
 }
 
 export function renderBikeDevelopment(data) {
@@ -104,6 +128,10 @@ export function renderBikeDevelopmentError(error) {
   const summary = document.getElementById("bike-dev-summary");
   if (summary) summary.textContent = `Development validation unavailable: ${message}.`;
   document.getElementById("bike-exploratory-rank").textContent = "Development validation failed to load, so no exploratory order is available.";
+  lastBikeRace = [];
+  if (!document.getElementById("bike-view")?.hidden) {
+    renderRaceStrip("battle-a-race", [], "Bike Sharing · development order");
+  }
 }
 
 export async function initBikeExploratoryRanking() {

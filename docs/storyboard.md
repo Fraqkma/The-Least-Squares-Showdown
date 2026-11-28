@@ -4,16 +4,16 @@
 
 ## Recording format and timing (10:00 total)
 
-Six teammates record independently (1080p, 16:9 browser window at ~1366×768 or 125% zoom in the harbor presentation) and splice their clips in order. Each slot runs **~100 seconds (1:40)**—roughly **210–240 spoken words** at a calm presentation pace.
+Six teammates record independently (1080p, 16:9 browser window at ~1366×768 or 125% zoom in the snowy mountain-expedition presentation) and splice their clips in order. Each slot runs **~100 seconds (1:40)**—roughly **210–240 spoken words** at a calm presentation pace.
 
 | Slot | Time | Focus | Screen sections |
 | --- | --- | --- | --- |
-| Speaker 1 | 00:00–01:40 | Opening question & Least Squares worked example | Overview (`#overview`), Least Squares Lab (`#least-squares` walkthrough) |
-| Speaker 2 | 01:40–03:20 | Normal equations, projection & Battle B numerical solvers | Least Squares geometry (`#least-squares`), Battle B (`#battle-b`) |
-| Speaker 3 | 03:20–05:00 | Bike Sharing dataset, 48-column design & leakage-free split | Battle A Bike Sharing (`#results`, development table & details) |
-| Speaker 4 | 05:00–06:40 | Polynomial overfitting & Synthetic ten-seed validation study | Overfitting Lab (`#overfitting`), Battle A Synthetic tab (`#synthetic-view`) |
-| Speaker 5 | 06:40–08:20 | Ridge Regression, unpenalized intercept & 3D loss surface | Least Squares 3D surface (`#least-squares`), Ridge Lab (`#ridge`) |
-| Speaker 6 | 08:20–10:00 | Bike Sharing development vs official holdout, weights & limits | Battle A Bike Sharing (`#results` dev + official tables), wrap-up |
+| Speaker 1 | 00:00–01:40 | Opening question & Least Squares worked example | Base Camp: Overview (`#overview`), Camp I: Least Squares Lab (`#least-squares` walkthrough) |
+| Speaker 2 | 01:40–03:20 | Normal equations, projection & Battle B numerical solvers | Camp I: Least Squares geometry (`#least-squares`), Summit: Battle B (`#battle-b`) |
+| Speaker 3 | 03:20–05:00 | Bike Sharing dataset, 48-column design & leakage-free split | Camp III: Battle A Bike Sharing (`#results`, development table & details) |
+| Speaker 4 | 05:00–06:40 | Polynomial overfitting & Synthetic ten-seed validation study | Camp II: Overfitting Lab (`#overfitting`), Camp III: Battle A Synthetic tab (`#synthetic-view`) |
+| Speaker 5 | 06:40–08:20 | **[NEEDS UPDATE: `#ridge` chapter removed]** Ridge Regression & 3D loss surface | Camp I: Least Squares 3D surface (`#least-squares`), Base Camp: Overview OLS/Ridge fit (`#overview`) |
+| Speaker 6 | 08:20–10:00 | Bike Sharing development vs official holdout, weights & limits | Camp III: Battle A Bike Sharing (`#results` dev + official tables), wrap-up |
 
 ### Fast recording setup and Run All fallback
 
@@ -152,6 +152,8 @@ Six teammates record independently (1080p, 16:9 browser window at ~1366×768 or 
 ---
 
 ## Speaker 5 (06:40–08:20) — 3D Loss Surface and Ridge Regression Lab
+
+> **[REVIEW NOTE FOR AUTHOR]:** The standalone Ridge Regression chapter (`#ridge`) was removed in the `snow-showdown` redesign. The 3D loss surface in Camp I (`#least-squares`) and the OLS/Ridge fit + shared `λ` slider in Base Camp (`#overview`) remain intact, so please decide how you want to adjust Speaker 5's screen cues and narration (left untouched below).
 
 **Starting screen:** `#least-squares` (scroll to **Find the lowest loss** 3D surface), then click **Ridge Regression** (`#ridge`).
 

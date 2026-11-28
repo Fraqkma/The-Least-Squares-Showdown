@@ -9,7 +9,7 @@
 
 .masthead {
   display: flex;
-  min-height: 78px;
+  min-height: 76px;
   align-items: center;
   justify-content: space-between;
   gap: 16px;
@@ -18,73 +18,125 @@
 .brand { display: inline-flex; align-items: center; gap: 12px; color: var(--ink); text-decoration: none; }
 .brand-mark { width: 42px; height: 42px; flex: none; }
 .brand-text { display: grid; gap: 2px; }
-.brand-name { font-family: var(--display); font-size: 16px; font-weight: 650; letter-spacing: -0.02em; line-height: 1.15; }
+.brand-name { font-family: var(--display); font-size: 19px; font-weight: 400; letter-spacing: 0.01em; line-height: 1.1; }
 .brand-course { color: var(--ink-muted); font-size: 13px; font-weight: 650; line-height: 1.2; }
 .mast-actions { display: flex; align-items: center; justify-content: flex-end; gap: 14px; }
 
-/* Chapter navigation: the chapters are a real sequence, so they keep their numbers. */
+/* Chapter navigation: five wooden trail arrow signs pointing toward the summit. */
 .chapter-nav {
   position: relative;
-  padding: 6px;
-  border: 1px solid var(--line);
-  border-radius: 999px;
-  background: var(--surface);
-  box-shadow: var(--shadow-card);
+  padding: 4px 0;
 }
-.chapter-nav ol { display: flex; gap: 4px; margin: 0; padding: 0; list-style: none; }
-.chapter-nav li { flex: 1 1 auto; }
+.chapter-nav ol {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.chapter-nav li {
+  position: relative;
+  flex: 1 1 0;
+  min-width: 0;
+}
 .chapter-nav a {
+  position: relative;
   display: flex;
   min-height: 46px;
   align-items: center;
   justify-content: center;
-  gap: 10px;
-  padding: 6px 16px 6px 7px;
-  border-radius: 999px;
-  color: var(--ink-soft);
+  gap: 8px;
+  padding: 6px 20px 6px 10px;
+  background: linear-gradient(180deg, var(--wood-edge) 0%, var(--wood) 22%, var(--wood-dark) 100%);
+  color: var(--cream);
+  font-family: var(--display);
   font-size: 15px;
-  font-weight: 760;
+  font-weight: 400;
+  letter-spacing: 0.02em;
   line-height: 1.15;
   text-decoration: none;
   white-space: nowrap;
-  transition: background-color var(--fast) var(--ease), color var(--fast) var(--ease);
+  clip-path: polygon(0 6px, 6px 0, calc(100% - 14px) 0, 100% 50%, calc(100% - 14px) 100%, 6px 100%, 0 calc(100% - 6px));
+  filter: drop-shadow(0 2px 3px rgba(55, 84, 124, 0.22));
+  transition: transform var(--fast) var(--ease), filter var(--fast) var(--ease);
 }
-.chapter-nav a:hover { background: var(--accent-soft); color: var(--ink); }
+.chapter-nav a:hover {
+  color: #ffffff;
+  transform: translateY(-1px);
+  filter: drop-shadow(0 4px 6px rgba(55, 84, 124, 0.28));
+}
+.chapter-nav a:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+  clip-path: none;
+  border-radius: var(--radius-s);
+}
 .chapter-num {
   display: grid;
-  width: 30px;
-  height: 30px;
+  width: 24px;
+  height: 24px;
   flex: none;
   place-items: center;
-  border: 1.5px solid var(--line-strong);
   border-radius: 50%;
-  background: var(--surface);
-  color: var(--ink);
-  font-size: 14px;
+  background: rgba(247, 239, 217, 0.2);
+  color: var(--cream);
+  font-family: var(--sans);
+  font-size: 13px;
   font-weight: 850;
 }
-.chapter-name small { margin-left: 3px; color: inherit; font-size: 13px; font-weight: 650; opacity: 0.75; }
-.chapter-nav a[aria-current] { background: var(--solid); color: #ffffff; }
-.chapter-nav a[aria-current] .chapter-num { border-color: var(--primary); background: var(--primary); color: #ffffff; }
+.chapter-name { overflow: hidden; text-overflow: ellipsis; }
+.chapter-name small { margin-left: 3px; color: inherit; font-family: var(--sans); font-size: 12px; font-weight: 700; opacity: 0.86; }
+.chapter-nav a[aria-current] {
+  background: linear-gradient(180deg, #8c5a35 0%, var(--wood) 30%, #52321a 100%);
+  color: #ffffff;
+  box-shadow: inset 0 0 0 2px rgba(247, 239, 217, 0.35);
+}
+.chapter-nav a[aria-current] .chapter-num {
+  background: var(--cream);
+  color: var(--wood-dark);
+}
+/* Small summit flag perched on the current wooden sign */
+.chapter-nav li:has(a[aria-current])::after {
+  position: absolute;
+  z-index: 2;
+  top: -12px;
+  right: 18px;
+  width: 18px;
+  height: 18px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 18 18'%3E%3Cpath d='M4 17V2' stroke='%2337547C' stroke-width='2' stroke-linecap='round'/%3E%3Cpath d='M5 2.5l10 3.5-10 4z' fill='%23B5503B'/%3E%3C/svg%3E") center / contain no-repeat;
+  content: "";
+  pointer-events: none;
+}
 
-main { display: block; padding-top: 24px; }
+main { display: block; padding-top: 22px; }
 main:focus { outline: none; }
 
-/* Chapter 1 hero: the one illustrated moment. */
+/* Snowfall canvas overlay — strictly inside .hero and .chapter-head */
+.snow-canvas {
+  position: absolute;
+  z-index: 2;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+/* Chapter 1 hero: painted twilight mountain trail map */
 .hero {
   position: relative;
   display: grid;
-  min-height: clamp(470px, 62vh, 620px);
+  min-height: clamp(500px, 64vh, 640px);
   overflow: hidden;
   isolation: isolate;
   border-radius: var(--radius-xl);
-  background: var(--navy);
+  background: var(--slate);
 }
 .hero::before {
   position: absolute;
   z-index: 0;
   inset: 0;
-  background: radial-gradient(ellipse 58% 52% at 50% 30%, rgba(3, 26, 75, 0.36), transparent 72%);
+  background: linear-gradient(180deg, rgba(55, 84, 124, 0.62) 0%, rgba(55, 84, 124, 0.28) 46%, rgba(38, 61, 92, 0.42) 100%);
   content: "";
   pointer-events: none;
 }
@@ -95,84 +147,148 @@ main:focus { outline: none; }
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: 50% 80%;
+  object-position: 50% 62%;
 }
 .hero-copy {
   position: relative;
-  z-index: 1;
-  width: min(100%, 1040px);
+  z-index: 3;
+  width: min(100%, 880px);
   margin: 0 auto;
-  padding: clamp(40px, 7.5vh, 76px) 24px 150px;
+  padding: clamp(32px, 5.5vh, 58px) 24px 190px;
   color: #ffffff;
   text-align: center;
 }
 .hero-kicker {
-  margin: 0 0 14px;
-  color: rgba(255, 255, 255, 0.88);
+  margin: 0 0 10px;
+  color: rgba(255, 255, 255, 0.94);
   font-size: 16px;
   font-weight: 750;
-  letter-spacing: 0.01em;
-  text-shadow: 0 1px 10px rgba(3, 22, 64, 0.5);
+  letter-spacing: 0.02em;
+  text-shadow: 0 1px 10px rgba(38, 61, 92, 0.65);
 }
 .hero h1 {
   color: #ffffff;
-  font-size: clamp(38px, 5.2vw, 76px);
-  font-weight: 720;
-  letter-spacing: -0.035em;
-  line-height: 1.03;
-  text-shadow: 0 4px 28px rgba(3, 22, 64, 0.5);
+  font-size: clamp(40px, 5.6vw, 78px);
+  font-weight: 400;
+  letter-spacing: 0.015em;
+  line-height: 1.02;
+  text-shadow: 0 4px 20px rgba(38, 61, 92, 0.65), 0 2px 0 rgba(55, 84, 124, 0.75);
 }
 .hero h1 span { display: block; }
 .hero-question {
-  max-width: 32ch;
-  margin: 20px auto 0;
+  max-width: 34ch;
+  margin: 16px auto 0;
   color: #ffffff;
-  font-size: clamp(19px, 1.75vw, 25px);
-  font-weight: 760;
+  font-size: clamp(19px, 1.75vw, 24px);
+  font-weight: 750;
   line-height: 1.35;
-  text-shadow: 0 2px 16px rgba(3, 22, 64, 0.65);
+  text-shadow: 0 2px 14px rgba(38, 61, 92, 0.75);
 }
-.hero-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin-top: 28px; }
+.hero-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin-top: 22px; }
 
-/* Chapter covers with a porthole that carries the chapter's metaphor. */
+/* Real HTML camp markers placed over the painted mountain trail */
+.trail-camps {
+  position: absolute;
+  z-index: 4;
+  inset: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  pointer-events: none;
+}
+.camp-stop {
+  position: absolute;
+  pointer-events: auto;
+}
+.camp-1 { left: 4%; bottom: 6%; }
+.camp-2 { left: 24%; bottom: 13%; }
+.camp-3 { left: 47%; bottom: 15%; }
+.camp-4 { left: 68%; bottom: 31%; }
+.camp-5 { right: 4%; top: 14%; }
+
+.camp-stop a {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 12px 7px 9px;
+  border: 2px solid rgba(255, 255, 255, 0.85);
+  border-radius: 999px;
+  background: rgba(55, 84, 124, 0.9);
+  color: #ffffff;
+  text-decoration: none;
+  box-shadow: 0 6px 18px rgba(38, 61, 92, 0.35);
+  transition: transform var(--fast) var(--ease), background-color var(--fast) var(--ease);
+}
+.camp-stop a:hover {
+  background: var(--slate-dark);
+  color: #ffffff;
+  transform: translateY(-2px);
+}
+.camp-stop a:focus-visible {
+  outline: 3px solid #ffffff;
+  outline-offset: 3px;
+}
+.camp-pin {
+  width: 11px;
+  height: 11px;
+  flex: none;
+  border: 2px solid #ffffff;
+  border-radius: 50%;
+  background: var(--mauve);
+}
+.camp-stop a[aria-current] .camp-pin { background: #b5503b; }
+.camp-meta { display: grid; gap: 1px; line-height: 1.15; }
+.camp-meta strong { font-family: var(--display); font-size: 14px; font-weight: 400; letter-spacing: 0.02em; }
+.camp-sub { color: rgba(255, 255, 255, 0.88); font-size: 12px; font-weight: 700; }
+
+/* Chapter banners: painted slice of the mountain at each camp */
 .chapter-head {
   position: relative;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
-  gap: 28px;
+  min-height: clamp(190px, 21vw, 240px);
   overflow: hidden;
   isolation: isolate;
-  padding: clamp(24px, 3vw, 36px) clamp(20px, 3vw, 44px) 118px;
+  padding: clamp(22px, 2.8vw, 34px) clamp(20px, 3vw, 44px);
   border: 1px solid var(--line);
   border-radius: var(--radius-xl);
-  background: linear-gradient(180deg, var(--white) 0%, #f2fafa 52%, #def4f4 100%);
+  background: var(--tint);
 }
-.chapter-head::after {
+.chapter-head::before {
   position: absolute;
-  z-index: -1;
-  inset: auto 0 0;
-  height: 160px;
-  background: url("/img/banner-waves.svg") right bottom / auto 160px no-repeat;
+  z-index: 0;
+  inset: 0;
+  background: linear-gradient(90deg, rgba(244, 242, 248, 0.96) 0%, rgba(244, 242, 248, 0.88) 48%, rgba(244, 242, 248, 0.25) 78%, rgba(244, 242, 248, 0.08) 100%);
   content: "";
   pointer-events: none;
 }
-.chapter-watermark {
+.chapter-banner-art {
   position: absolute;
   z-index: -1;
-  top: 6px;
-  right: clamp(170px, 15vw, 250px);
-  color: rgba(0, 101, 141, 0.07);
-  font: 700 clamp(120px, 13vw, 190px) / 1 var(--display);
-  letter-spacing: -0.06em;
-  pointer-events: none;
-  user-select: none;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: right center;
 }
-.chapter-count { margin: 0 0 8px; color: var(--accent); font-size: 15px; font-weight: 850; }
-.chapter-head h2 { max-width: 24ch; font-size: clamp(30px, 3.25vw, 50px); }
-.chapter-lede { max-width: 64ch; margin: 14px 0 0; color: var(--ink-soft); font-size: var(--text-l); line-height: 1.55; }
-.porthole { width: clamp(112px, 10.5vw, 156px); height: auto; flex: none; filter: drop-shadow(0 10px 16px rgba(4, 39, 104, 0.16)); }
-.chapter-head .porthole { align-self: end; margin-bottom: -84px; }
+.chapter-head-text { position: relative; z-index: 3; max-width: 66ch; }
+.camp-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 8px;
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: var(--wood);
+  color: var(--cream);
+  font-size: 14px;
+  line-height: 1.2;
+}
+.camp-name { font-family: var(--display); font-size: 15px; font-weight: 400; letter-spacing: 0.02em; }
+.camp-alt { font-family: var(--sans); font-size: 13px; font-weight: 800; opacity: 0.92; }
+.chapter-count { margin: 0 0 6px; color: var(--accent); font-size: 16px; font-weight: 850; }
+.chapter-head h2 { max-width: 24ch; font-size: clamp(30px, 3.2vw, 48px); }
+.chapter-lede { max-width: 62ch; margin: 12px 0 0; color: var(--ink-soft); font-size: var(--text-l); line-height: 1.5; }
 
 /* Explanation and visualization: about 35% text and 65% graph on desktop. */
 .split {
@@ -184,11 +300,11 @@ main:focus { outline: none; }
 .split > * { min-width: 0; }
 .split-text > p, .split-text > .lede { color: var(--ink-soft); }
 .split-text > h2, .split-text > h3 { margin-bottom: 12px; }
-.block-title { font-size: clamp(24px, 2.1vw, 32px); }
-.block-kicker { margin: 0 0 6px; color: var(--accent); font-size: 15px; font-weight: 800; }
+.block-title { font-size: clamp(24px, 2.2vw, 32px); }
+.block-kicker { margin: 0 0 6px; color: var(--accent); font-size: 16px; font-weight: 800; }
 .lede { color: var(--ink) !important; font-size: var(--text-l); font-weight: 650; line-height: 1.5; }
-.chapter > .split, .chapter > section, .chapter > .overfit-cards, .chapter > .ridge-visuals, .chapter > .ridge-notes, .chapter > .view-tabs, .chapter > .battle-view { margin-top: 34px; }
-.chapter > .chapter-head + * { margin-top: 28px; }
+.chapter > .split, .chapter > section, .chapter > .overfit-cards, .chapter > .battle-a-bar, .chapter > .battle-view { margin-top: 32px; }
+.chapter > .chapter-head + * { margin-top: 26px; }
 
 .overview-fit { margin-top: 34px; }
 .overview-notes {
@@ -199,7 +315,7 @@ main:focus { outline: none; }
   margin-top: 34px;
 }
 
-/* Pager: a small voyage track shows how far through the six chapters you are */
+/* Pager: small trail of five camp markers (passed, current with flag, ahead) */
 .chapter-pager {
   display: flex;
   align-items: center;
@@ -209,39 +325,49 @@ main:focus { outline: none; }
   padding: 18px 0 8px;
   border-top: 1px solid var(--line);
 }
-.pager-progress { display: grid; gap: 2px; }
+.pager-progress { display: grid; gap: 4px; }
 .pager-progress > span { color: var(--ink-muted); font-size: 15px; font-weight: 750; }
 .pager-buttons { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 10px; }
-.voyage { position: relative; display: flex; width: 252px; height: 40px; justify-content: space-between; }
-.voyage::before {
+.camp-trail { position: relative; display: flex; width: 224px; height: 38px; justify-content: space-between; }
+.camp-trail::before {
   position: absolute;
   top: 24px;
   right: 7px;
   left: 7px;
-  height: 8px;
-  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 8'%3E%3Cpath d='M0 4 q6 -5 12 0 t12 0' fill='none' stroke='%235cc8ca' stroke-width='2' stroke-dasharray='3 3'/%3E%3C/svg%3E") left center / 24px 8px repeat-x;
+  height: 2px;
+  border-top: 2px dashed var(--mist-grey);
   content: "";
 }
-.voyage i { position: relative; z-index: 1; width: 14px; height: 14px; margin-top: 21px; border: 2px solid var(--petrol); border-radius: 50%; background: var(--white); }
-.voyage i[data-state="past"] { border-color: var(--turquoise); background: var(--turquoise); }
-.voyage i[data-state="current"] { border-color: var(--rust); background: var(--rust); box-shadow: 0 0 0 4px var(--primary-soft); }
-.voyage i[data-state="current"]::after {
+.camp-trail i {
+  position: relative;
+  z-index: 1;
+  width: 14px;
+  height: 14px;
+  margin-top: 18px;
+  border: 2px solid var(--lavender);
+  border-radius: 50%;
+  background: var(--white);
+}
+.camp-trail i[data-state="past"] { border-color: var(--periwinkle); background: var(--periwinkle); }
+.camp-trail i[data-state="current"] { border-color: var(--slate); background: var(--slate); box-shadow: 0 0 0 4px var(--primary-soft); }
+.camp-trail i[data-state="current"]::after {
   position: absolute;
   bottom: 13px;
   left: 50%;
-  width: 26px;
-  height: 24px;
-  transform: translateX(-50%);
-  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 26 24'%3E%3Cpath d='M13 2v15' stroke='%235a2e22' stroke-width='2'/%3E%3Cpath d='M14 3l8 13h-8z' fill='%23fdf2ea' stroke='%23042768' stroke-width='1'/%3E%3Cpath d='M12 6l-6 10h6z' fill='%23f6ccb4'/%3E%3Cpath d='M3 18h20l-3 5H6z' fill='%23042768'/%3E%3Cpath d='M14 3l5 2-5 2z' fill='%23b5503b'/%3E%3C/svg%3E") center / contain no-repeat;
+  width: 20px;
+  height: 20px;
+  transform: translateX(-35%);
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath d='M5 19V2' stroke='%2337547C' stroke-width='2.2' stroke-linecap='round'/%3E%3Cpath d='M6 2.5l11 4-11 4.5z' fill='%23B5503B'/%3E%3C/svg%3E") center / contain no-repeat;
   content: "";
 }
 
+/* Quiet snowbank footer */
 .site-footer {
   display: flex;
-  min-height: clamp(300px, 22.5vw, 440px);
+  min-height: clamp(190px, 16vw, 270px);
   align-items: flex-end;
-  margin-top: 12px;
-  background: url("/img/seabed.svg") center bottom / cover no-repeat;
+  margin-top: 20px;
+  background: url("/img/snow/footer-snowbank.webp") center bottom / cover no-repeat;
 }
 .footer-text {
   display: flex;
@@ -251,64 +377,86 @@ main:focus { outline: none; }
   justify-content: space-between;
   gap: 6px 24px;
   margin: 0 auto;
-  padding: 0 var(--gutter) 22px;
+  padding: 14px var(--gutter) 20px;
   color: var(--ink);
   font-size: 14px;
   font-weight: 750;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.85);
 }
 
-/* Wave dividers with a life ring mark the move to a new part of a chapter */
-.sea-divider { height: 56px; max-width: 1200px; margin: 46px auto 0; background: url("/img/divider.svg") center / contain no-repeat; }
-.chapter > .sea-divider + *, .battle-view > .sea-divider + * { margin-top: 26px; }
+/* Subtle alpine snow-ridge divider */
+.snow-divider {
+  height: 22px;
+  max-width: 1200px;
+  margin: 40px auto 0;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 600 22'%3E%3Cpath d='M0 16 Q150 15 268 15 L292 4 L306 11 L318 6 L336 15 Q450 15 600 16' fill='none' stroke='%239192B0' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round' opacity='0.65'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+.chapter > .snow-divider + *, .battle-view > .snow-divider + * { margin-top: 26px; }
 
-/* Layout follows the width of the shell, so docking the control panel reflows the chapters too. */
-@container shell (max-width: 1150px) {
-  .chapter-nav a { padding-right: 12px; font-size: 14px; }
+/* Container queries: keep nav fitting cleanly at 1100 px with Controls panel open */
+@container shell (max-width: 1040px) {
+  .chapter-nav ol { gap: 5px; }
+  .chapter-nav a { padding: 6px 14px 6px 7px; font-size: 13.5px; gap: 6px; }
+  .chapter-num { width: 21px; height: 21px; font-size: 11.5px; }
   .chapter-name small { display: none; }
-}
-
-@container shell (max-width: 980px) {
-  .chapter-nav { border-radius: var(--radius-l); }
-  .chapter-nav ol { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); }
-  .chapter-nav li { min-width: 0; }
-  .chapter-nav a { justify-content: flex-start; }
 }
 
 @container shell (max-width: 820px) {
   .split, .overview-notes { grid-template-columns: minmax(0, 1fr); }
-  .chapter-watermark { right: 140px; font-size: 110px; }
+  .hero-copy { padding-bottom: 24px; }
+  .trail-camps {
+    position: relative;
+    inset: auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+    gap: 8px;
+    padding: 0 18px 22px;
+    pointer-events: auto;
+  }
+  .camp-stop { position: static; }
+  .camp-stop a { width: 100%; border-radius: var(--radius-m); }
 }
 
 @media (max-width: 640px) {
   body { font-size: 16px; }
-  .masthead { min-height: 68px; gap: 10px; }
+  .masthead { min-height: 64px; gap: 10px; }
   .brand { gap: 9px; }
   .brand-mark { width: 34px; height: 34px; }
-  .brand-name { font-size: 13px; }
+  .brand-name { font-size: 15px; }
   .brand-course { display: none; }
   .mast-actions { gap: 8px; }
   .mast-actions .connection-state { display: none; }
-  .chapter-nav { padding: 4px; }
-  .chapter-nav ol { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 2px; }
-  .chapter-nav a { min-height: 40px; gap: 7px; padding: 4px 8px 4px 5px; font-size: 13.5px; }
-  .chapter-num { width: 24px; height: 24px; font-size: 12px; }
-  main { padding-top: 16px; }
+
+  /* Phones: compact horizontal row of small wooden signs */
+  .chapter-nav {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    padding: 12px 0 4px;
+    scrollbar-width: thin;
+  }
+  .chapter-nav ol { flex-wrap: nowrap; width: max-content; min-width: 100%; gap: 6px; }
+  .chapter-nav li { flex: 0 0 auto; }
+  .chapter-nav a { min-height: 38px; padding: 5px 15px 5px 8px; font-size: 13px; gap: 6px; }
+  .chapter-num { width: 20px; height: 20px; font-size: 11px; }
+  .chapter-name small { display: none; }
+
+  main { padding-top: 14px; }
   .hero { min-height: 0; border-radius: var(--radius-l); }
-  .hero-art { object-position: 54% 100%; }
-  .hero-copy { padding: 34px 18px 170px; }
+  .hero-copy { padding: 28px 16px 18px; }
   .hero-kicker { font-size: 14px; }
   .hero h1 { font-size: clamp(32px, 9.5vw, 44px); }
   .hero-actions { flex-direction: column; align-items: stretch; max-width: 320px; margin-inline: auto; }
-  .chapter-head { grid-template-columns: minmax(0, 1fr); padding: 22px 18px 104px; border-radius: var(--radius-l); }
-  .chapter-head::after { height: 120px; background-size: auto 120px; }
-  .chapter-head .porthole { position: absolute; right: 14px; bottom: 12px; width: 88px; margin: 0; }
-  .chapter-watermark { display: none; }
+  /* Phones: vertical list of camps */
+  .trail-camps { grid-template-columns: minmax(0, 1fr); padding: 4px 16px 20px; }
+
+  .chapter-head { min-height: 170px; padding: 20px 18px; border-radius: var(--radius-l); }
+  .chapter-head::before { background: linear-gradient(180deg, rgba(244, 242, 248, 0.94) 0%, rgba(244, 242, 248, 0.84) 68%, rgba(244, 242, 248, 0.55) 100%); }
   .chapter-head h2 { font-size: clamp(26px, 7.4vw, 34px); }
   .chapter-lede { font-size: 17px; }
   .chapter-pager { align-items: flex-start; flex-direction: column; }
   .pager-buttons { width: 100%; justify-content: stretch; }
   .chapter-pager .button { flex: 1 1 auto; }
-  .site-footer { min-height: 0; padding-top: 250px; background: url("/img/seabed.svg") center top / auto 300px no-repeat, linear-gradient(to bottom, transparent 290px, var(--peach) 290px); }
+  .site-footer { min-height: 165px; }
   .footer-text { flex-direction: column; font-size: 13px; }
-  .sea-divider { height: 44px; margin-top: 34px; }
+  .snow-divider { height: 18px; margin-top: 30px; }
 }

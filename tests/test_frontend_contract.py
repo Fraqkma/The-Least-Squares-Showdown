@@ -5,7 +5,7 @@ from html.parser import HTMLParser
 from pathlib import Path
 
 FRONTEND = Path(__file__).resolve().parents[1] / "frontend"
-CHAPTERS = ["overview", "least-squares", "overfitting", "ridge", "results", "battle-b"]
+CHAPTERS = ["overview", "least-squares", "overfitting", "results", "battle-b"]
 # Created by walkthrough.js when a step renders, so they are not in the static page.
 RENDERED_IDS = {"walk-predictions", "walk-residual-note"}
 
@@ -43,7 +43,7 @@ def _scripts() -> dict[Path, str]:
     return {path: path.read_text(encoding="utf-8") for path in FRONTEND.joinpath("js").rglob("*.js")}
 
 
-def test_six_chapters_in_presentation_order() -> None:
+def test_five_chapters_in_presentation_order() -> None:
     assert _page().chapters == CHAPTERS
 
 

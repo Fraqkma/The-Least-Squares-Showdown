@@ -1,14 +1,24 @@
-import { renderBikeDevelopment, renderBikeDevelopmentError } from "./bike-rank.js";
+import { getBikeRaceEntries, renderBikeDevelopment, renderBikeDevelopmentError } from "./bike-rank.js";
 
 import { renderSolverTradeoff, renderSyntheticDegrees } from "./charts/battles.js";
 import { colors, fontFamily } from "./charts/theme.js";
+import { renderRaceStrip } from "./race-strip.js";
 
 const byId = (id) => document.getElementById(id);
 let solverResults = [];
+let syntheticRaceEntries = [];
 let surfaceRequest = 0;
 let surfaceController = null;
 let surfaceDebounce;
 let studyGeneration = 0;
+
+function syncBattleARace(view) {
+  if (view === "synthetic") {
+    renderRaceStrip("battle-a-race", syntheticRaceEntries, "Synthetic · 10-seed mean validation MSE");
+  } else {
+    renderRaceStrip("battle-a-race", getBikeRaceEntries(), "Bike Sharing · development order");
+  }
+}
 
 const tabIds = ["bike", "synthetic"];
 function setView(view) {
@@ -18,6 +28,7 @@ function setView(view) {
     tab.setAttribute("aria-selected", String(name === view));
     tab.setAttribute("tabindex", name === view ? "0" : "-1");
   }
+  syncBattleARace(view);
   const plot = byId(view === "synthetic" ? "synthetic-plot" : "bike-window-plot");
   if (plot && plot.data) {
     Plotly.Plots.resize(plot);
@@ -131,7 +142,7 @@ async function renderSurface() {
       opacity: 0.86,
       colorscale: colors.surfaceRamp,
       showscale: false,
-      contours: { z: { show: true, usecolormap: false, color: "rgba(4,39,104,0.16)", width: 1, start: 0, end: Math.max(...data.z.flat()), size: Math.max(...data.z.flat()) / 12 } },
+      contours: { z: { show: true, usecolormap: false, color: "rgba(55,84,124,0.16)", width: 1, start: 0, end: Math.max(...data.z.flat()), size: Math.max(...data.z.flat()) / 12 } },
       hovertemplate: `Intercept: %{x:.2f}<br>Slope: %{y:.2f}<br>${objectiveLabel}: %{z:.2f}<extra>Loss surface</extra>`,
     };
     const sceneAxis = (text) => ({
@@ -182,6 +193,7 @@ function renderSolvers(event) {
     byId("solver-rows").innerHTML = '<tr><td colspan="7" class="table-empty">No solver measurements loaded yet. Check that the local API is running, or click Run All comparisons.</td></tr>';
     byId("solver-summary").textContent = "Solver measurements are currently unavailable.";
     byId("solver-rank").textContent = "No completed solves to order.";
+    renderRaceStrip("battle-b-race", [], "Solver race");
     return;
   }
   const [n, condition] = byId("solver-case").value.split("-").map(Number);
@@ -192,8 +204,10 @@ function renderSolvers(event) {
     byId("solver-rows").innerHTML = '<tr><td colspan="7" class="table-empty">No measurements are available for this case.</td></tr>';
     byId("solver-summary").textContent = "This benchmark case has no saved measurements.";
     byId("solver-rank").textContent = "No completed solves to order.";
+    renderRaceStrip("battle-b-race", [], "Solver race");
     return;
   }
+  const caseLabel = `${n} × ${rows[0].p}, condition ${condition === 10 ? "10" : "10⁶"}`;
   byId("solver-caption").textContent = `${n} × ${rows[0].p} matrix · condition ${condition === 10 ? "10" : "10⁶"} · identical inputs`;
   byId("solver-rows").innerHTML = rows.map((row) => {
     const success = row.status === "completed";
@@ -214,6 +228,7 @@ function renderSolvers(event) {
   if (!completed.length) {
     byId("solver-summary").textContent = "No completed solve is available for this case.";
     byId("solver-rank").textContent = "No completed solves to order.";
+    renderRaceStrip("battle-b-race", rows.map((row) => ({ name: row.method, rank: 4, status: "incomplete" })), caseLabel);
     return;
   }
   const fastest = completed.reduce((best, row) => row.seconds < best.seconds ? row : best);
@@ -228,6 +243,12 @@ function renderSolvers(event) {
     .map((row) => ({ name: row.method, score: weight * row.seconds / maxTime + (1 - weight) * row.coefficient_relative_error / maxError }))
     .sort((a, b) => a.score - b.score);
   byId("solver-rank").textContent = `Exploratory order among completed solves: ${order.map((row) => row.name).join(" → ")}. Measured table values above do not change.`;
+
+  const raceEntries = order.map((item, idx) => ({ name: item.name, rank: idx + 1 }));
+  for (const row of rows) {
+    if (row.status !== "completed") raceEntries.push({ name: row.method, rank: order.length + 1, status: "incomplete" });
+  }
+  renderRaceStrip("battle-b-race", raceEntries, `${caseLabel} · runtime weight ${weight.toFixed(1)}`);
 }
 byId("solver-case").addEventListener("change", renderSolvers);
 byId("solver-weight").addEventListener("input", renderSolvers);
@@ -255,6 +276,15 @@ function renderSynthetic(data) {
   byId("synthetic-result-summary").textContent = winners.every((name) => name === winners[0])
     ? `${winners[0]} has the lowest mean selected validation MSE at every shown noise level. ${data.failures.length === 0 ? "All 1,800 Lasso fits converged." : `${data.failures.length} Lasso fits hit the iteration limit.`}`
     : `Lowest mean selected validation MSE by noise level: ${levels.map((noise, i) => `${noise}: ${winners[i]}`).join("; ")}.`;
+
+  // Rank the 3 models by overall mean selected validation MSE across the 3 shown noise levels.
+  const overall = ["OLS", "Ridge", "Lasso"].map((method) => {
+    const rows = data.rows.filter((row) => row.method === method);
+    return { name: method, mean: rows.reduce((sum, row) => sum + row.validation_mse, 0) / rows.length };
+  }).sort((a, b) => a.mean - b.mean);
+  syntheticRaceEntries = overall.map((item, idx) => ({ name: item.name, rank: idx + 1 }));
+  if (!byId("synthetic-view").hidden) syncBattleARace("synthetic");
+
   const traces = ["OLS", "Ridge", "Lasso"].map((method) => ({
     name: method,
     type: "scatter",
@@ -278,6 +308,8 @@ function renderSyntheticError(error) {
   byId("synthetic-result-summary").textContent = `Synthetic ten-seed results unavailable: ${message}.`;
   byId("synthetic-summary").textContent = "Could not load saved synthetic study. Click Run All comparisons to recompute when the local API is running.";
   byId("synthetic-rows").innerHTML = `<tr><td colspan="5" class="table-empty">Could not load synthetic results: ${message}.</td></tr>`;
+  syntheticRaceEntries = [];
+  if (!byId("synthetic-view").hidden) syncBattleARace("synthetic");
 }
 
 byId("run-all").addEventListener("click", async () => {

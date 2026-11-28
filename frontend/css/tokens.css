@@ -1,60 +1,64 @@
 /* Colour control panel: change a value here and it changes across the whole site.
-   Main palette: deep ocean (navy, petrol, turquoise, white, dusty rose, rust).
-   Sub palette: beach sand (peach, tan). Chart colours are mirrored in js/charts/theme.js. */
+   Palette: snowy alpine daylight (deep slate, periwinkle, lavender-grey, dusty mauve, snow tint, wood sign).
+   Chart colours are mirrored in js/charts/theme.js. */
 :root {
   color-scheme: light;
 
   /* 1. Palette */
-  --navy: #042768;
-  --petrol: #00658d;
-  --turquoise: #00b4b5;
-  --rose: #d9a393;
-  --rust: #7b2d24;
-  --peach: #f6ccb4;
-  --tan: #dbae8d;
+  --slate: #37547c;
+  --slate-dark: #263d5c;
+  --periwinkle: #67769f;
+  --lavender: #8483a8;
+  --mist-grey: #9192b0;
+  --mauve: #ccbac9;
+  --snow-tint: #f4f2f8;
+  --wood: #7a4e2d;
+  --wood-dark: #5e3b20;
+  --wood-edge: #93613b;
+  --cream: #f7efd9;
   --white: #ffffff;
 
-  /* 2. Page and surfaces: white carries most of the screen */
+  /* 2. Page and surfaces: snow white carries most of the screen */
   --page: var(--white);
   --surface: var(--white);
-  --tint: #eef5f8;
-  --tint-soft: #f7fafc;
-  --line: #d8e3ea;
-  --line-strong: #a9bfcc;
+  --tint: var(--snow-tint);
+  --tint-soft: #f9f8fc;
+  --line: #dcd9e6;
+  --line-strong: var(--mist-grey);
 
-  /* 3. Text */
-  --ink: var(--navy);
-  --ink-soft: #33466e;
-  --ink-muted: #5b6782;
+  /* 3. Text (small text stays >= 4.5:1 on white; #67769F is 4.5:1 so used for links/large secondary only) */
+  --ink: var(--slate);
+  --ink-soft: #41597a;
+  --ink-muted: #526385;
 
   /* 4. Accents */
-  --accent: var(--petrol);           /* links, focus rings, active outlines */
-  --accent-light: var(--turquoise);  /* small shapes only; too light for text */
-  --accent-soft: #e5f6f6;            /* result callouts and hovers */
-  --solid: var(--navy);              /* selected tabs, chapter pill, presets */
-  --primary: var(--rust);            /* the one main button and highlights */
-  --primary-hover: #5f2119;
-  --primary-soft: #f9ebe6;           /* rose tint behind highlighted steps */
-  --sand-tint: #fdf4ee;              /* equation and holdout panels */
-  --sand-line: #efd6c4;
-  --sand-ink: var(--rust);           /* labels sitting on sand */
+  --accent: var(--periwinkle);
+  --accent-light: var(--lavender);
+  --accent-soft: #eeeaf4;
+  --solid: var(--slate);
+  --primary: var(--slate);
+  --primary-hover: var(--slate-dark);
+  --primary-soft: #efe9f2;
+  --mauve-tint: #f5eff4;
+  --mauve-line: #d6c8d4;
+  --mauve-ink: var(--slate);
 
   /* 5. Status */
-  --success: #027b76;
+  --success: #167a6f;
   --warning: #8a5d00;
-  --error: #a8382b;
+  --error: #a63d2d;
 
-  /* 6. Chart series: these four pass the all-pairs colour-vision checks on white */
-  --series-ols: #00658d;
+  /* 6. Chart series: colour-blind checked on white */
+  --series-ols: #3a6aaf;
   --series-ridge: #b5503b;
-  --series-lasso: #05a0a2;
-  --series-gd: #d9a01e;
-  --series-train: #042768;
+  --series-lasso: #18978a;
+  --series-gd: #d49a1e;
+  --series-train: #26355e;
   --series-validation: #c29a2e;
-  --series-signal: #8c8f86;
+  --series-signal: #9192b0;
 
   /* Type */
-  --display: "Unbounded", "Arial Black", "Segoe UI", system-ui, sans-serif;
+  --display: "Lilita One", "Arial Rounded MT Bold", "Segoe UI", system-ui, sans-serif;
   --sans: "Nunito Sans", "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
   --math: "Cambria Math", "STIX Two Math", Cambria, "Times New Roman", serif;
   --mono: ui-monospace, "Cascadia Mono", Consolas, "Liberation Mono", monospace;
@@ -66,8 +70,8 @@
   --radius-s: 8px;
   --radius-m: 12px;
   --radius-l: 20px;
-  --radius-xl: 30px;
-  --shadow-card: 0 1px 2px rgba(4, 39, 104, 0.05);
+  --radius-xl: 28px;
+  --shadow-card: 0 2px 6px rgba(55, 84, 124, 0.06);
   --ease: cubic-bezier(0.22, 1, 0.36, 1);
   --fast: 160ms;
 
