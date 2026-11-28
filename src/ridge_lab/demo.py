@@ -53,6 +53,10 @@ def build_demo(degree: int, lam: float) -> dict[str, object]:
         },
         "train": {"x": dataset.train.x.tolist(), "y": dataset.train.y.tolist()},
         "validation": {"x": dataset.validation.x.tolist(), "y": dataset.validation.y.tolist()},
+        "predictions": {
+            "train": {"ols": ols_train.tolist(), "ridge": ridge_train.tolist()},
+            "validation": {"ols": ols_validation.tolist(), "ridge": ridge_validation.tolist()},
+        },
         "metrics": {
             "ols": {
                 "train_mse": mse(dataset.train.y, ols_train),

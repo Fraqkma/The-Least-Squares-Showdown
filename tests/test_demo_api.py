@@ -1,6 +1,7 @@
 import json
 from pathlib import Path
 
+import numpy as np
 from fastapi.testclient import TestClient
 
 from api.main import app
@@ -37,6 +38,18 @@ def test_api_rejects_out_of_range_controls() -> None:
     assert client.get("/api/demo", params={"degree": 16}).status_code == 422
     assert client.get("/api/demo", params={"lambda": -1}).status_code == 422
     assert client.get("/api/demo", params={"lambda": 1001}).status_code == 422
+
+
+def test_point_inspector_predictions_match_the_reported_mse() -> None:
+    demo = build_demo(degree=12, lam=0.1)
+    for split in ("train", "validation"):
+        observed = np.asarray(demo[split]["y"])
+        for method in ("ols", "ridge"):
+            predicted = np.asarray(demo["predictions"][split][method])
+            assert observed.shape == predicted.shape
+            np.testing.assert_allclose(
+                np.mean((observed - predicted) ** 2), demo["metrics"][method][f"{split}_mse"]
+            )
 
 
 def test_official_bike_route_serves_recorded_artifact_without_scoring(monkeypatch) -> None:

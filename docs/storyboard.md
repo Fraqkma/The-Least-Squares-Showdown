@@ -4,7 +4,7 @@
 
 ## Recording format and timing (10:00 total)
 
-Six teammates record independently (1080p, 16:9 browser window at ~1366×768 or 125% zoom on dark theme) and splice their clips in order. Each slot runs **~100 seconds (1:40)**—roughly **210–240 spoken words** at a calm presentation pace.
+Six teammates record independently (1080p, 16:9 browser window at ~1366×768 or 125% zoom in the harbor presentation) and splice their clips in order. Each slot runs **~100 seconds (1:40)**—roughly **210–240 spoken words** at a calm presentation pace.
 
 | Slot | Time | Focus | Screen sections |
 | --- | --- | --- | --- |
@@ -22,8 +22,9 @@ Six teammates record independently (1080p, 16:9 browser window at ~1366×768 or 
    .\.venv\Scripts\python.exe -m uvicorn api.main:app --port 8000
    ```
    Open `http://127.0.0.1:8000` in a clean browser window.
-2. **Saved-results fallback (recommended during solo recording):** Saved development studies (`results/solvers.json` and `results/synthetic.json`) and the approved one-time official holdout (`results/bike-official.json`) load automatically on first visit. Speakers do **not** need to click **Run All comparisons** while recording unless demonstrating live recomputation (which takes ~40 seconds for the full 10-seed synthetic sweep).
+2. **Saved-results fallback (recommended during solo recording):** Saved development studies (`results/solvers.json` and `results/synthetic.json`) and the approved one-time official holdout (`results/bike-official.json`) load automatically on first visit. Speakers do **not** need to open **Controls** and click **Run All comparisons** while recording unless demonstrating live recomputation (which takes ~40 seconds for the full 10-seed synthetic sweep).
 3. **Never rerun `ridge_lab.official` during recording.** The official holdout table reads the frozen artifact `results/bike-official.json` only.
+4. **Moving around:** use the numbered chapter bar, the Previous/Next buttons at the foot of each chapter, or the ← and → keys. **Controls** (top right) opens the current chapter's settings beside the chart; Esc closes it, and settings stay as you left them.
 
 ---
 
@@ -33,7 +34,7 @@ Six teammates record independently (1080p, 16:9 browser window at ~1366×768 or 
 
 **On-screen sequence:**
 1. Pause 5 seconds on **Overview** (`The Least Squares Showdown`), pointing to the question: *"Can we predict how many bikes will be rented in a given hour?"*
-2. Click **See how least squares works** (scrolls to `#least-squares`, **From Points to Least Squares**, Step 1 of 4).
+2. Click **See how least squares works** to open `#least-squares`, **From points to least squares**, Step 1 of 4.
 3. Click **Next** (Step 2: points `P1 (0, 1)`, `P2 (1, 2)`, `P3 (2, 2)` map to design matrix rows `[1, 0]`, `[1, 1]`, `[1, 2]` and target `y = [1, 2, 2]`).
 4. Click **Next** (Step 3: starting line `ŷ = 1 + x`, predictions `[1, 2, 3]`, red dashed residual `−1` at `P3`, `SSE = 1`).
 5. Click **Next** (Step 4: line animates to `ŷ = 7/6 + x/2`, residuals `[−1/6, 1/3, −1/6]`, `SSE = 1/6`). Briefly expand **Show normal equations**.
@@ -59,7 +60,7 @@ Six teammates record independently (1080p, 16:9 browser window at ~1366×768 or 
 
 ## Speaker 2 (01:40–03:20) — Projection Geometry and Battle B Numerical Solvers
 
-**Starting screen:** `#least-squares` (scroll to the projection diagram below the 3D surface), then click **Battle B** in the left navigation (`#battle-b`).
+**Starting screen:** `#least-squares` (scroll to the projection diagram below the 3D surface), then click **Battle B** in the chapter bar (`#battle-b`).
 
 **On-screen sequence:**
 1. Point to the objective `min ‖y − Aw‖₂²`, the normal equations `AᵀAw = Aᵀy`, and the right-angle projection sketch (`r ⟂ Col(A)`).
@@ -90,7 +91,7 @@ Six teammates record independently (1080p, 16:9 browser window at ~1366×768 or 
 
 ## Speaker 3 (03:20–05:00) — Bike Sharing Data, 48-Column Basis, and Chronological Split
 
-**Starting screen:** Click **Battle A** in the left navigation (`#results`, **Bike Sharing** tab active).
+**Starting screen:** Click **Battle A** in the chapter bar (`#results`, **Bike Sharing** tab active).
 
 **On-screen sequence:**
 1. Highlight the opening prompt and **Development validation (five chronological windows)** heading.
@@ -124,7 +125,7 @@ Six teammates record independently (1080p, 16:9 browser window at ~1366×768 or 
 **On-screen sequence:**
 1. Pause on the three fixed side-by-side plots (**Underfit degree 1**, **Good fit degree 3**, **Overfit degree 12**) on the same seeded split (`seed 42`, noise SD `0.2`, 24 train / 24 validation points).
 2. Read the Train MSE and Validation MSE directly beneath each card (`0.19047 / 0.21333`, `0.04294 / 0.06439`, `0.01119 / 0.40449`).
-3. Expand **Details for your current overview controls** to point out the unscaled training design condition number (`5.709e6` at degree 9).
+3. Scroll past **What changes as the model becomes more flexible** (the grouped Train/Validation MSE bars) to **Try any degree**, and point out the unscaled training design condition number (`5,709,000` at degree 9).
 4. Click **Battle A** → click the **Synthetic** tab (`#view-synthetic`). Show the 10-seed table across noise SD `0.1`, `0.2`, `0.4`, the `0` convergence failures column, and the Seed-42 validation-MSE-by-degree curve.
 
 **Verified numbers to say (`build_demo`, `results/synthetic.json`, `results/lasso-convergence-audit.json`):**
@@ -156,7 +157,7 @@ Six teammates record independently (1080p, 16:9 browser window at ~1366×768 or 
 
 **On-screen sequence:**
 1. On the 3D surface (`#loss-surface`), drag briefly to rotate, set **Surface Ridge penalty λ** to `0` (markers overlap at intercept `1.00`, slope `1.98`, SSE `0.14`), then move `λ` to `5` (OLS stays at slope `1.98`, height `19.76`; Ridge minimum shifts to slope `1.35`, height `13.51`, while intercept stays `1.00`).
-2. Click **Ridge Regression** in the left nav (`#ridge`, default degree `9`).
+2. Click **Ridge Regression** in the chapter bar (`#ridge`, default degree `9`).
 3. Click the preset **`λ = 0 (matches OLS)`** — point out the curves overlap identically (`Validation MSE: OLS 0.07124 · Ridge 0.07124`) and all coefficient bars match.
 4. Click **`λ = 0.1`** — point out the grouped signed coefficient bars compressing huge OLS weights (`±10,000` scale) while the intercept stays unpenalized.
 5. Click **`λ = 1,000 (strong)`** — show the over-regularized, overly flat Ridge curve and higher validation MSE (`0.3491`).

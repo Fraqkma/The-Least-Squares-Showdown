@@ -17,3 +17,6 @@ artifacts/metrics/*
 .env
 .DS_Store
 Thumbs.db
+
+# Files delivered by Claude during reviews (screenshots, patches)
+Claude outputs/

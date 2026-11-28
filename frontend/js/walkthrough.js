@@ -13,6 +13,7 @@ const indicator = document.querySelector("#walk-step-indicator");
 const back = document.querySelector("#walk-back");
 const next = document.querySelector("#walk-next");
 const reset = document.querySelector("#walk-reset");
+const stepperItems = [...document.querySelectorAll(".stepper li")];
 const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
 let step = 0;
 let generation = 0;
@@ -69,6 +70,11 @@ function render() {
   cancelAnimation();
   const token = generation;
   indicator.textContent = `Step ${step + 1} of 4`;
+  stepperItems.forEach((item, index) => {
+    item.dataset.state = index < step ? "done" : index === step ? "current" : "upcoming";
+    if (index === step) item.setAttribute("aria-current", "step");
+    else item.removeAttribute("aria-current");
+  });
   back.disabled = step === 0;
   next.disabled = step === 3;
   if (step === 0) {

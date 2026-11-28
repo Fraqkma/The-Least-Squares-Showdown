@@ -1,4 +1,7 @@
-﻿import { renderBikeDevelopment, renderBikeDevelopmentError } from "./bike-rank.js?v=upgrade1";
+import { renderBikeDevelopment, renderBikeDevelopmentError } from "./bike-rank.js";
+
+import { renderSolverTradeoff, renderSyntheticDegrees } from "./charts/battles.js";
+import { colors, fontFamily } from "./charts/theme.js";
 
 const byId = (id) => document.getElementById(id);
 let solverResults = [];
@@ -15,13 +18,12 @@ function setView(view) {
     tab.setAttribute("aria-selected", String(name === view));
     tab.setAttribute("tabindex", name === view ? "0" : "-1");
   }
-  if (view === "synthetic") {
-    const plot = byId("synthetic-plot");
-    if (plot && plot.data) {
-      Plotly.Plots.resize(plot);
-      requestAnimationFrame(() => Plotly.Plots.resize(plot));
-    }
+  const plot = byId(view === "synthetic" ? "synthetic-plot" : "bike-window-plot");
+  if (plot && plot.data) {
+    Plotly.Plots.resize(plot);
+    requestAnimationFrame(() => Plotly.Plots.resize(plot));
   }
+  document.dispatchEvent(new CustomEvent("battleviewchange", { detail: { view } }));
 }
 
 tabIds.forEach((name, index) => {
@@ -97,18 +99,28 @@ async function renderSurface() {
     const data = await getJson(`/api/study/surface?lam=${lam}`, { signal: controller.signal });
     if (request !== surfaceRequest) return;
     const objectiveLabel = lam === 0 ? "SSE" : `SSE + ${lam} × slope²`;
+    byId("surface-height-label").textContent = lam === 0 ? "SSE" : "SSE + λ × slope²";
+    // The mesh joins grid points with straight segments, so it sits a little above the true bowl.
+    // Lift each marker by a sliver of the height range so it is not hidden inside the mesh;
+    // the hover label still reports the exact objective value.
+    const zValues = data.z.flat();
+    const lift = 0.012 * (Math.max(...zValues) - Math.min(...zValues));
     const markers = ["ols", "ridge"].map((name) => {
       const [intercept, slope] = data[name];
       const title = name === "ols" ? "OLS solution" : "Ridge minimum";
+      const objective = data.marker_objective[name];
       return {
         type: "scatter3d",
         mode: "markers",
         name: title,
         x: [intercept],
         y: [slope],
-        z: [data.marker_objective[name]],
-        marker: { size: name === "ols" ? 8 : 10, opacity: 1, color: name === "ols" ? "#61c9b2" : "#ef9a73" },
-        hovertemplate: `${title}<br>Intercept: %{x:.3f}<br>Slope: %{y:.3f}<br>${objectiveLabel}: %{z:.3f}<extra></extra>`,
+        z: [objective + lift],
+        customdata: [objective],
+        marker: name === "ols"
+          ? { size: 18, symbol: "circle-open", color: colors.ols, line: { color: colors.ols, width: 4 } }
+          : { size: 8, symbol: "circle", color: colors.ridge, line: { color: "#ffffff", width: 1 } },
+        hovertemplate: `${title}<br>Intercept: %{x:.3f}<br>Slope: %{y:.3f}<br>${objectiveLabel}: %{customdata:.3f}<extra></extra>`,
       };
     });
     const surfaceTrace = {
@@ -116,23 +128,35 @@ async function renderSurface() {
       x: data.x,
       y: data.y,
       z: data.z,
-      opacity: 0.62,
+      opacity: 0.86,
+      colorscale: colors.surfaceRamp,
       showscale: false,
+      contours: { z: { show: true, usecolormap: false, color: "rgba(4,39,104,0.16)", width: 1, start: 0, end: Math.max(...data.z.flat()), size: Math.max(...data.z.flat()) / 12 } },
       hovertemplate: `Intercept: %{x:.2f}<br>Slope: %{y:.2f}<br>${objectiveLabel}: %{z:.2f}<extra>Loss surface</extra>`,
     };
+    const sceneAxis = (text) => ({
+      title: { text, font: { family: fontFamily, size: 14, color: colors.ink } },
+      tickfont: { family: fontFamily, size: 12, color: colors.inkSoft },
+      gridcolor: colors.grid,
+      zerolinecolor: colors.axis,
+      backgroundcolor: "rgba(0,0,0,0)",
+    });
     await Plotly.react("loss-surface", [surfaceTrace, ...markers], {
-      margin: { l: 0, r: 0, t: 36, b: 0 },
-      paper_bgcolor: "#1b2527",
-      font: { color: "#eff5f1", size: 12 },
+      margin: { l: 0, r: 0, t: 8, b: 0 },
+      paper_bgcolor: "rgba(0,0,0,0)",
+      font: { family: fontFamily, color: colors.ink, size: 13 },
+      hoverlabel: { bgcolor: colors.surface, bordercolor: colors.axis, font: { family: fontFamily, color: colors.ink } },
       scene: {
-        xaxis: { title: { text: "Intercept" } },
-        yaxis: { title: { text: "Slope" } },
-        zaxis: { title: { text: lam === 0 ? "Objective: SSE" : "Objective: SSE + λ × slope²" } },
-        camera: { eye: { x: 1.55, y: 1.5, z: 1.15 } },
+        xaxis: sceneAxis("Intercept"),
+        yaxis: sceneAxis("Slope"),
+        zaxis: sceneAxis(lam === 0 ? "Objective: SSE" : "Objective: SSE + λ × slope²"),
+        camera: { eye: { x: 1.16, y: -1.02, z: 1.0 }, center: { x: 0.04, y: 0, z: -0.16 } },
+        aspectmode: "manual",
+        aspectratio: { x: 1, y: 1, z: 0.62 },
       },
-      legend: { orientation: "h", y: 1.12 },
+      legend: { orientation: "h", x: 0, y: 1, font: { family: fontFamily, size: 13 } },
       uirevision: "loss-surface-camera",
-    }, { responsive: true });
+    }, { responsive: true, displaylogo: false, modeBarButtonsToRemove: ["toImage"] });
     if (request !== surfaceRequest) return;
     const olsObj = data.marker_objective.ols.toFixed(2);
     const ridgeObj = data.marker_objective.ridge.toFixed(2);
@@ -151,8 +175,9 @@ byId("surface-penalty").addEventListener("input", () => {
   surfaceDebounce = window.setTimeout(renderSurface, 80);
 });
 
-function renderSolvers() {
+function renderSolvers(event) {
   if (!solverResults.length) {
+    Plotly.purge("solver-plot");
     byId("solver-caption").textContent = "Solver measurements unavailable";
     byId("solver-rows").innerHTML = '<tr><td colspan="7" class="table-empty">No solver measurements loaded yet. Check that the local API is running, or click Run All comparisons.</td></tr>';
     byId("solver-summary").textContent = "Solver measurements are currently unavailable.";
@@ -162,6 +187,7 @@ function renderSolvers() {
   const [n, condition] = byId("solver-case").value.split("-").map(Number);
   const rows = solverResults.filter((row) => row.n === n && row.condition === condition);
   if (!rows.length) {
+    Plotly.purge("solver-plot");
     byId("solver-caption").textContent = "No saved rows for this benchmark case";
     byId("solver-rows").innerHTML = '<tr><td colspan="7" class="table-empty">No measurements are available for this case.</td></tr>';
     byId("solver-summary").textContent = "This benchmark case has no saved measurements.";
@@ -182,6 +208,7 @@ function renderSolvers() {
       + `<td class="num">${row.method === "Batch Gradient Descent" ? row.iterations ?? "—" : "Direct"}</td></tr>`;
   }).join("");
   const weight = Number(byId("solver-weight").value);
+  if (event?.target?.id !== "solver-weight") renderSolverTradeoff(rows);
   byId("solver-weight-value").textContent = weight.toFixed(1);
   const completed = rows.filter((row) => row.status === "completed");
   if (!completed.length) {
@@ -228,13 +255,10 @@ function renderSynthetic(data) {
   byId("synthetic-result-summary").textContent = winners.every((name) => name === winners[0])
     ? `${winners[0]} has the lowest mean selected validation MSE at every shown noise level. ${data.failures.length === 0 ? "All 1,800 Lasso fits converged." : `${data.failures.length} Lasso fits hit the iteration limit.`}`
     : `Lowest mean selected validation MSE by noise level: ${levels.map((noise, i) => `${noise}: ${winners[i]}`).join("; ")}.`;
-  const methodColors = { OLS: "#61c9b2", Ridge: "#ef9a73", Lasso: "#eec273" };
   const traces = ["OLS", "Ridge", "Lasso"].map((method) => ({
     name: method,
     type: "scatter",
     mode: "lines+markers",
-    line: { color: methodColors[method], width: 2.5 },
-    marker: { color: methodColors[method], size: 6 },
     x: Array.from({ length: 15 }, (_, i) => i + 1),
     y: Array.from({ length: 15 }, (_, i) => {
       const rows = data.candidates.filter((row) => row.seed === 42 && row.noise === 0.2 && row.method === method && row.degree === i + 1);
@@ -242,16 +266,7 @@ function renderSynthetic(data) {
     }),
     hovertemplate: `${method}<br>Degree %{x}<br>Best validation MSE: %{y:.5f}<extra></extra>`,
   }));
-  Plotly.react("synthetic-plot", traces, {
-    title: { text: "Seed 42 · noise standard deviation (SD) 0.2 · best validation MSE by degree", font: { size: 13, color: "#eff5f1" } },
-    paper_bgcolor: "#1b2527",
-    plot_bgcolor: "#1b2527",
-    font: { family: "Inter, system-ui, sans-serif", color: "#eff5f1", size: 11 },
-    legend: { orientation: "h", x: 0, y: 1.12 },
-    xaxis: { title: "Polynomial degree", dtick: 2, gridcolor: "rgba(225, 239, 233, 0.14)", tickfont: { color: "#c2d2ca" } },
-    yaxis: { title: "Validation MSE (log scale)", type: "log", tickvals: [0.01, 0.1, 1, 10], ticktext: ["0.01", "0.1", "1", "10"], gridcolor: "rgba(225, 239, 233, 0.14)", tickfont: { color: "#c2d2ca" } },
-    margin: { t: 68, b: 56, l: 78, r: 16 },
-  }, { displayModeBar: false, responsive: true });
+  renderSyntheticDegrees("synthetic-plot", traces);
   const lassoConverged = data.candidates.filter((row) => row.method === "Lasso").length;
   byId("synthetic-details").textContent = data.failures.length === 0
     ? `All ${lassoConverged} Lasso candidates converged (0 failures). Selected degrees and penalties are saved in results/synthetic.json.`
@@ -327,4 +342,11 @@ async function loadSavedStudies() {
 
 loadOfficial();
 loadSavedStudies();
-renderSurface();
+let surfaceShown = false;
+function showSurfaceWhenVisible() {
+  if (surfaceShown || byId("least-squares").hidden) return;
+  surfaceShown = true;
+  renderSurface();
+}
+document.addEventListener("chapterchange", showSurfaceWhenVisible);
+showSurfaceWhenVisible();

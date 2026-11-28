@@ -1,3 +1,5 @@
+import { renderBikeWindows } from "./charts/battles.js";
+
 const weightIds = ["bike-rmse-weight", "bike-support-weight", "bike-variation-weight"];
 let listenersBound = false;
 
@@ -91,9 +93,11 @@ export function renderBikeDevelopment(data) {
   }
   bindWeightListeners();
   renderExploratoryRank();
+  renderBikeWindows(data.results);
 }
 
 export function renderBikeDevelopmentError(error) {
+  Plotly.purge("bike-window-plot");
   const message = error?.message ?? "Local API unavailable";
   document.getElementById("bike-comparison-rows").innerHTML =
     `<tr><td colspan="6" class="table-empty">Could not load development validation results: ${message}. Check that the local API is running, or click Run All comparisons.</td></tr>`;

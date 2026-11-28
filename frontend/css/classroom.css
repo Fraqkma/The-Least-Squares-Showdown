@@ -1,0 +1,94 @@
+/* Presentation mode: one chapter at a time, with a docked control panel that never covers the chart. */
+.lab-panel {
+  position: fixed;
+  z-index: 40;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  width: var(--panel-width);
+  flex-direction: column;
+  gap: 14px;
+  padding: 18px 20px 20px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  border-left: 1px solid var(--line-strong);
+  background: var(--surface);
+  box-shadow: -20px 0 50px -36px rgba(4, 39, 104, 0.5);
+  animation: panel-in-side 220ms var(--ease);
+}
+@keyframes panel-in-side { from { opacity: 0; transform: translateX(24px); } to { opacity: 1; transform: none; } }
+@keyframes panel-in-up { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: none; } }
+
+body.panel-open { padding-right: var(--panel-width); }
+
+.panel-head {
+  position: sticky;
+  z-index: 1;
+  top: -18px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin: -18px -20px 0;
+  padding: 18px 20px 12px;
+  border-bottom: 1px solid var(--line);
+  background: var(--surface);
+}
+.panel-chapter { margin: 0 0 2px; color: var(--accent); font-size: 14px; font-weight: 850; }
+.panel-head h2 { font-size: 22px; }
+.panel-head h2:focus { outline: none; }
+.panel-close {
+  display: grid;
+  width: 42px;
+  height: 42px;
+  flex: none;
+  place-items: center;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-m);
+  background: var(--surface);
+  color: var(--ink);
+  cursor: pointer;
+}
+.panel-close svg { width: 18px; height: 18px; }
+.panel-close:hover { border-color: var(--accent); background: var(--accent-soft); }
+.panel-note { margin: 0; color: var(--ink-soft); font-size: 15px; }
+.panel-tools { display: grid; gap: 16px; }
+.panel-tools > * { margin: 0 !important; }
+.panel-tools .control-group { display: grid; padding: 16px; border: 1px solid var(--line); border-radius: var(--radius-m); background: var(--surface); }
+.panel-tools .bike-ranking { padding: 14px 16px; }
+.panel-tools .bike-weight-grid { grid-template-columns: minmax(0, 1fr); }
+.panel-tools .surface-control { margin: 0; }
+.panel-tools .case-picker { display: grid; gap: 8px; margin: 0; padding: 14px 16px; border: 1px solid var(--line); border-radius: var(--radius-m); background: var(--surface); }
+.panel-tools .case-picker select { width: 100%; }
+.panel-tools .view-tabs { display: flex; }
+.panel-tools .view-tabs button { flex: 1; padding-inline: 10px; }
+.run-toolbar { display: grid; gap: 8px; margin-top: auto; padding-top: 16px; border-top: 1px solid var(--line); }
+.run-toolbar p { margin: 0; color: var(--ink-muted); font-size: 14px; }
+.panel-keys { margin: 0; color: var(--ink-muted); font-size: 13px; }
+kbd { display: inline-block; min-width: 22px; padding: 1px 6px; border: 1px solid var(--line-strong); border-bottom-width: 2px; border-radius: 6px; background: var(--surface); color: var(--ink); font: 800 12px var(--sans); text-align: center; }
+
+/* Smaller screens: a bottom sheet that leaves the chart visible above it. */
+@media (max-width: 1099px) {
+  .lab-panel {
+    top: auto;
+    right: 10px;
+    bottom: 10px;
+    left: 10px;
+    width: auto;
+    max-height: min(52vh, 480px);
+    padding: 16px 16px 18px;
+    border: 1px solid var(--line-strong);
+    border-radius: var(--radius-l);
+    box-shadow: 0 -18px 50px -28px rgba(4, 39, 104, 0.5);
+    animation-name: panel-in-up;
+  }
+  .panel-head { top: -16px; margin: -16px -16px 0; padding: 14px 16px 10px; border-radius: var(--radius-l) var(--radius-l) 0 0; }
+  body.panel-open { padding-right: 0; padding-bottom: min(54vh, 500px); }
+  .panel-keys { display: none; }
+}
+
+@media print {
+  .lab-panel, .chapter-nav, .chapter-pager, .panel-toggle, .skip-link { display: none !important; }
+  .chapter[hidden] { display: block !important; }
+}
